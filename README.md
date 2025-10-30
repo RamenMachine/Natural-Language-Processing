@@ -310,8 +310,40 @@ Natural-Language-Processing/
 │   ├── 🦊 foxnewshealth.txt   # Fox News health content
 │   └── 📺 cnnhealth.txt       # CNN health content
 ├── 📄 README.md              # Comprehensive documentation
+├── 📋 requirements.txt        # Python dependencies
+├── 📜 LICENSE                 # MIT License
+├── 🚫 .gitignore             # Git ignore rules
 └── 🚀 [Future Assignments]   # Expanding NLP portfolio
 ```
+
+## 🔧 **Quick Start**
+
+### **Prerequisites**
+- Python 3.8+ (Recommended: Python 3.13)
+- pip package manager
+
+### **Installation**
+```bash
+# Clone the repository
+git clone https://github.com/RamenMachine/Natural-Language-Processing.git
+cd Natural-Language-Processing
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Download NLTK data (first run only)
+python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')"
+
+# Run the main NLP pipeline
+python "Assignment 1.py"
+```
+
+### **Expected Output**
+- Processed corpus data (`corpus.csv`)
+- Statistical analysis of health tweets
+- Hashtag trend analysis
+- Spell correction demonstrations
+- Performance metrics and insights
 
 ---
 
