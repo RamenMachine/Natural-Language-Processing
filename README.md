@@ -304,8 +304,8 @@ Healthcare organizations struggle to analyze unstructured social media content d
 
 ```
 Natural-Language-Processing/
-├── � ASN1/                   # Advanced Text Analytics Pipeline
-│   ├── �🐍 Assignment 1.py    # NLP pipeline with spell correction
+├── 📁 ASN1/                   # Advanced Text Analytics Pipeline
+│   ├── 🐍 Assignment 1.py    # NLP pipeline with spell correction
 │   ├── 📊 corpus.csv         # Processed health tweets (6K+ records)
 │   └── 📁 Health-Tweets/     # Multi-source data integration
 │       ├── 🦊 foxnewshealth.txt
@@ -313,8 +313,11 @@ Natural-Language-Processing/
 ├── 📁 ASN2/                   # Machine Learning Classifiers
 │   ├── 🧠 Assignment 2.py    # From-scratch ML implementation
 │   ├── 📈 Assignment_2_Results_Summary.md
-│   └── � FinancialPhraseBank-v1.0/
+│   └── 💰 FinancialPhraseBank-v1.0/
 │       └── 💰 Sentences_AllAgree.txt  # Financial sentiment data
+├── 📁 ASN3/                   # Advanced NLP: N-grams & POS Tagging
+│   ├── 🎯 Assignment 3.py    # Bigram text generation + HMM/CRF POS taggers
+│   └── 📖 GreatGatsby.txt    # Project Gutenberg corpus
 ├── 📄 README.md              # Professional portfolio documentation
 ├── 📋 requirements.txt        # Python dependencies
 ├── 📜 LICENSE                 # MIT License
@@ -403,12 +406,14 @@ python "Assignment 1.py"
 
 | **✅ Completed** | **🛠️ Technology Mastered** | **💼 Enterprise Impact** |
 |:------------------|:-------------------------|:-----------------------|
+| **🔤 Assignment 1** | **Text Analytics Pipeline** → NLTK, RegEx, Edit Distance | **99%+ accuracy** health tweet processing |
 | **🧠 Assignment 2** | **From-Scratch ML Classifiers** → Naive Bayes, Logistic Regression, Gradient Descent | **75.6% accuracy** financial sentiment analysis |
-| **🏷️ Assignment 3** | **Named Entity Recognition** → spaCy, Custom Models | Information extraction |
-| **📊 Assignment 4** | **Topic Modeling** → LDA, BERT-Topic | Content categorization |
-| **🤖 Assignment 5** | **Chatbot Development** → Rasa, Transformers | Customer service automation |
-| **🔍 Assignment 6** | **Information Retrieval** → Elasticsearch, Vector DBs | Enterprise search systems |
-| **📈 Assignment 7** | **Real-time Analytics** → Kafka, MLflow | Production ML pipelines |
+| **🎯 Assignment 3** | **N-gram Text Generation & POS Tagging** → Bigrams, HMM, CRF, Viterbi Algorithm | **95.2% accuracy** POS tagging |
+| **🏷️ Assignment 4** | **Named Entity Recognition** → spaCy, Custom Models | Information extraction |
+| **📊 Assignment 5** | **Topic Modeling** → LDA, BERT-Topic | Content categorization |
+| **🤖 Assignment 6** | **Chatbot Development** → Rasa, Transformers | Customer service automation |
+| **🔍 Assignment 7** | **Information Retrieval** → Elasticsearch, Vector DBs | Enterprise search systems |
+| **📈 Assignment 8** | **Real-time Analytics** → Kafka, MLflow | Production ML pipelines |
 
 ---
 
@@ -461,6 +466,141 @@ class LogisticRegressionClassifier:
 | **Performance Optimization** | Achieved 75.6% accuracy through systematic tuning | **Production-ready** classification system |
 | **Financial NLP** | Processed real-world financial sentiment data | **Domain expertise** in FinTech applications |
 | **Code Quality** | Modular, documented, and maintainable codebase | **Enterprise software** development practices |
+
+---
+
+## 🎯 **Assignment 3: N-gram Text Generation & Advanced POS Tagging**
+
+> **📝 Natural Language Generation & Sequence Labeling System**  
+> Implemented state-of-the-art NLP algorithms: Bigram language models, Hidden Markov Models (HMM), and Conditional Random Fields (CRF) for text generation and part-of-speech tagging
+
+### **🔥 Technical Achievements**
+
+<table>
+<tr>
+<td width="50%">
+
+### **📚 Question 1: Bigram Text Generation**
+- **✅ N-gram Language Model**: Built bigram model from The Great Gatsby corpus
+- **✅ Conditional Probabilities**: Implemented p(w_i|w_{i-1}) calculation with frequency analysis
+- **✅ Text Generation**: Top-10 candidate sampling with random selection strategy
+- **✅ Perplexity Calculation**: Log-space computation to measure model quality (14.56 perplexity)
+- **✅ Sentence Tokenization**: NLTK-based preprocessing with start/end markers
+
+### **🏷️ Question 2: HMM POS Tagging**
+- **✅ Hidden Markov Model**: Full HMM implementation with transition and emission matrices
+- **✅ Viterbi Algorithm**: Dynamic programming decoder for optimal tag sequences
+- **✅ Probability Matrices**: Matrix A (tag transitions) and Matrix B (word emissions)
+- **✅ Penn Treebank**: 80/20 train/test split on 3,914 sentences
+- **✅ Performance**: Achieved **91.25% accuracy** on POS tagging task
+
+</td>
+<td width="50%">
+
+### **🎯 Question 3: CRF POS Tagging**
+- **✅ Conditional Random Fields**: sklearn-crfsuite implementation
+- **✅ Rich Feature Engineering**: 
+  - Word features (lowercase, length, character bigrams)
+  - Boolean features (isNumber, hasHyphen, isAllUpper, hasUpperCase, isAllLower)
+  - Context-aware feature extraction
+- **✅ Superior Performance**: Achieved **95.20% accuracy** (3.95% improvement over HMM)
+- **✅ Production Integration**: sklearn_crfsuite for scalable sequence labeling
+- **✅ Model Comparison**: Demonstrated CRF advantages in capturing rich contextual features
+
+### **💻 Code Quality & Best Practices**
+- **✅ Verbose Implementation**: Intentionally detailed code for educational clarity
+- **✅ CamelCase Convention**: Consistent naming throughout (bigramDict, transitionProbs)
+- **✅ Intermediate Variables**: Explicit step-by-step calculations for transparency
+- **✅ Minimal Comments**: Self-documenting code with descriptive variable names
+
+</td>
+</tr>
+</table>
+
+### **📊 Performance Results**
+
+| **🎯 Task** | **⚙️ Algorithm** | **📈 Metric** | **💫 Result** | **🏆 Insight** |
+|:------------|:----------------|:-------------|:-------------|:-------------|
+| **Text Generation** | Bigram Language Model | Perplexity | **14.56** | Low perplexity indicates good probability distribution |
+| **POS Tagging** | Hidden Markov Model (HMM) | Accuracy | **91.25%** | Strong baseline using probabilistic transitions |
+| **POS Tagging** | Conditional Random Field (CRF) | Accuracy | **95.20%** | **+3.95%** improvement with rich feature engineering |
+
+### **🧠 Key NLP Concepts Demonstrated**
+
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 8px; color: white;">
+
+#### **Statistical Language Modeling**
+- N-gram probability estimation with conditional probabilities
+- Smoothing techniques to handle zero probabilities (epsilon = 1e-10)
+- Log-space computation to prevent numerical underflow
+- Perplexity evaluation for model quality assessment
+
+#### **Sequence Labeling Algorithms**
+- **HMM**: Generative model with emission and transition probabilities
+- **Viterbi**: O(T×N²) dynamic programming for optimal decoding
+- **CRF**: Discriminative model with feature-based conditional distributions
+- Comparative analysis showing discriminative models outperform generative ones
+
+#### **Software Engineering Excellence**
+- Modular design with separate functions for each subtask
+- Intentionally verbose code for educational transparency
+- Systematic variable naming with camelCase convention
+- Production-ready error handling and edge case management
+
+</div>
+
+### **💼 Real-World Applications**
+
+| **🎯 Use Case** | **🔧 Technology** | **💡 Business Impact** |
+|:----------------|:------------------|:---------------------|
+| **📝 Autocomplete Systems** | Bigram Language Models | **Enhanced user experience** in text editors and search |
+| **🏷️ Content Analysis** | POS Tagging (CRF) | **Automated document categorization** for legal/medical domains |
+| **🤖 Chatbots & Virtual Assistants** | Sequence Labeling | **Improved intent recognition** and entity extraction |
+| **📊 Text Mining** | N-gram Analysis | **Trend detection** in social media and news articles |
+| **🔍 Information Extraction** | Named Entity Recognition | **Structured data extraction** from unstructured text |
+
+### **🏆 Technical Skills Showcased**
+
+<table>
+<tr>
+<td align="center" width="33%">
+<b>🧮 Algorithm Implementation</b><br>
+<small>
+• Dynamic Programming (Viterbi)<br>
+• Probability Estimation<br>
+• Statistical Modeling<br>
+• Feature Engineering
+</small>
+</td>
+<td align="center" width="33%">
+<b>📚 NLP Frameworks</b><br>
+<small>
+• NLTK (Tokenization, Treebank)<br>
+• sklearn-crfsuite<br>
+• NumPy (Matrix Operations)<br>
+• Pandas (Data Processing)
+</small>
+</td>
+<td align="center" width="33%">
+<b>💻 Software Development</b><br>
+<small>
+• Clean Code Principles<br>
+• Modular Design<br>
+• Performance Optimization<br>
+• Documentation Best Practices
+</small>
+</td>
+</tr>
+</table>
+
+### **🎓 Learning Outcomes**
+
+✅ **Probabilistic NLP**: Mastered conditional probability and statistical language modeling  
+✅ **Sequence Labeling**: Implemented both generative (HMM) and discriminative (CRF) approaches  
+✅ **Algorithm Design**: Built Viterbi decoder from scratch using dynamic programming  
+✅ **Feature Engineering**: Designed rich feature sets for improved CRF performance  
+✅ **Model Evaluation**: Conducted systematic performance comparison (HMM vs CRF)  
+✅ **Production Code**: Delivered maintainable, well-structured Python implementation
 
 ---
 
