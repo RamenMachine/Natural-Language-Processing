@@ -46,6 +46,22 @@ def loadGreatGatsbyText(filePath):
     return returnValue
 
 
+def loadNewsCorpus():
+    from nltk.corpus import reuters
+    nltk.download('reuters', quiet=True)
+    
+    # Get first 500 articles
+    fileIds = reuters.fileids()[:500]
+    
+    allText = []
+    for fileId in fileIds:
+        articleText = reuters.raw(fileId)
+        allText.append(articleText)
+    
+    fullText = ' '.join(allText)
+    return fullText
+
+
 def preprocessText(rawText):
     inputText = rawText
     sentenceList = sent_tokenize(inputText)
@@ -800,8 +816,7 @@ if __name__ == "__main__":
     print("QUESTION 1: BIGRAM TEXT GENERATION")
     print("="*70)
 
-    gatsbyFilePath = "GreatGatsby.txt"
-    rawText = loadGreatGatsbyText(gatsbyFilePath)
+    rawText = loadNewsCorpus()
 
     processedSentences = preprocessText(rawText)
 

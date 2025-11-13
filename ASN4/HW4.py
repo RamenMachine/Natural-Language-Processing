@@ -5,10 +5,10 @@ Assignment 4: Named Entity Recognition, TF-IDF, and PPMI
 Author: [Your Name]
 Date: November 2025
 
-This joint implements:
-1. TF-IDF vectorizer from scratch with cosine similarity (straight fire)
-2. Positive Pointwise Mutual Information (PPMI) calculation (word vibes checker)
-3. Named Entity Recognition using LSTM neural networks (big brain time)
+This assignment implements:
+1. TF-IDF vectorizer from scratch with cosine similarity
+2. Positive Pointwise Mutual Information (PPMI) calculation
+3. Named Entity Recognition using LSTM neural networks
 """
 
 import numpy as np
@@ -20,7 +20,7 @@ from typing import List, Dict, Tuple
 import warnings
 warnings.filterwarnings('ignore')
 
-# For Q3: Deep Learning shenanigans
+# For Q3: Deep Learning stuff
 try:
     from tensorflow import keras
     from keras.models import Sequential
@@ -30,671 +30,669 @@ try:
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score, precision_recall_fscore_support
     import gensim.downloader as api
-    kerasIsVibing = True
+    kerasAvailable = True
 except ImportError:
-    kerasIsVibing = False
-    print("Yo fam, Keras/TensorFlow ain't installed. Q3 gonna skip rn.")
+    kerasAvailable = False
+    print("Note: Keras/TensorFlow not available. Q3 won't run without it.")
 
 
 # ============================================================================
 # QUESTION 1: TF-IDF AND COSINE SIMILARITY (25 points)
 # ============================================================================
 
-class TfIdfVectorBoss:
+class TfidfVectorizer:
     """
-    Custom TF-IDF Vectorizer - we buildin this from scratch no cap
-    Implements the spicy formulas:
-    - TF(t,d) = log10(count(t,d) + 1)  # how often word shows up
-    - IDF(t) = log10(N / df_t)  # how rare the word is across docs
-    - TF-IDF(t,d) = TF(t,d) * IDF(t)  # the final boss combo
+    Custom TF-IDF Vectorizer - built from scratch
+    Implements the formulas:
+    - TF(t,d) = log10(count(t,d) + 1)
+    - IDF(t) = log10(N / df_t)
+    - TF-IDF(t,d) = TF(t,d) * IDF(t)
     """
 
     def __init__(self):
-        self.wordDict = {}  # maps words to their index positions (the roster)
-        self.idfVibes = {}  # stores idf scores for each word (rarity meter)
-        self.totalDocs = 0  # how many docs we workin with
+        self.vocabulary = {}  # maps words to their index positions
+        self.idfValues = {}  # stores idf scores for each word
+        self.numDocs = 0  # total number of documents
 
-    def buildVocabSwag(self, docsList: List[List[str]]):
+    def buildVocabulary(self, documents: List[List[str]]):
         """
-        Build up our vocabulary from all the docs - gotta know what words we got
+        Build vocabulary from documents - create word-to-index mapping
 
         Args:
-            docsList: List of docs, each doc is a list of words (the whole squad)
+            documents: List of documents, where each document is a list of words
         """
         uniqueWords = set()
-        for singleDoc in docsList:
-            uniqueWords.update(singleDoc)
+        for doc in documents:
+            uniqueWords.update(doc)
 
-        # Make a dictionary mapping words to numbers (indexin the homies)
-        self.wordDict = {word: idx for idx, word in enumerate(sorted(uniqueWords))}
-        print(f"Yo! Vocabulary got {len(self.wordDict)} words in it, that's bussin")
+        # Create word to index mapping
+        self.vocabulary = {word: idx for idx, word in enumerate(sorted(uniqueWords))}
+        print(f"Vocabulary size: {len(self.vocabulary)}")
 
-    def calculateDocFreq(self, docsList: List[List[str]]) -> Dict[str, int]:
+    def calculateDocFrequency(self, documents: List[List[str]]) -> Dict[str, int]:
         """
-        Count how many docs each word appears in - popularity contest fr
+        Calculate document frequency for each term - how many docs contain each word
 
         Args:
-            docsList: All the docs we checkin
+            documents: List of documents
 
         Returns:
-            Dictionary with word -> how many docs it's in
+            Dictionary mapping word -> number of documents containing the word
         """
-        freqTracker = defaultdict(int)
-        for singleDoc in docsList:
-            uniqueWordsInDoc = set(singleDoc)
-            for word in uniqueWordsInDoc:
-                freqTracker[word] += 1
-        return dict(freqTracker)
+        dfDict = defaultdict(int)
+        for doc in documents:
+            uniqueWords = set(doc)
+            for word in uniqueWords:
+                dfDict[word] += 1
+        return dict(dfDict)
 
-    def getTermFrequency(self, wordToCheck: str, docToSearch: List[str]) -> float:
+    def getTermFrequency(self, term: str, document: List[str]) -> float:
         """
-        Calculate term frequency - basically how much this word shows up
-        Formula: tf(t,d) = log10(count(t,d) + 1)
+        Calculate term frequency using formula: tf(t,d) = log10(count(t,d) + 1)
 
         Args:
-            wordToCheck: The word we countin
-            docToSearch: The doc we searchin in
+            term: The word to calculate frequency for
+            document: List of words in the document
 
         Returns:
-            TF score (higher = word appears more)
+            Term frequency value
         """
-        wordCount = docToSearch.count(wordToCheck)
-        return math.log10(wordCount + 1)
+        count = document.count(term)
+        return math.log10(count + 1)
 
-    def getIdfScore(self, wordToLookup: str) -> float:
+    def getIdf(self, word: str) -> float:
         """
-        Get the inverse document frequency - tells us how rare/common a word is
-        Formula: idf(t) = log10(N / df_t)
+        Get inverse document frequency: idf(t) = log10(N / df_t)
 
         Args:
-            wordToLookup: Word we checkin the rarity for
+            word: The word to calculate IDF for
 
         Returns:
-            IDF value (higher = more rare and spicy)
+            IDF value
         """
-        if wordToLookup in self.idfVibes:
-            return self.idfVibes[wordToLookup]
+        if word in self.idfValues:
+            return self.idfValues[word]
         return 0.0
 
-    def fitTheData(self, docsList: List[List[str]]):
+    def fit(self, documents: List[List[str]]):
         """
-        Train this bad boy on our docs - learn all the word stats
+        Fit the vectorizer on documents - learn the vocabulary and IDF values
 
         Args:
-            docsList: List of docs to learn from (the training montage)
+            documents: List of documents (each document is a list of words)
         """
-        self.totalDocs = len(docsList)
+        self.numDocs = len(documents)
 
-        # Step 1: Build our word roster
-        self.buildVocabSwag(docsList)
+        # Step 1: Build vocabulary
+        self.buildVocabulary(documents)
 
-        # Step 2: Count how many docs each word appears in
-        freqDict = self.calculateDocFreq(docsList)
+        # Step 2: Calculate document frequencies
+        dfDict = self.calculateDocFrequency(documents)
 
-        # Step 3: Calculate IDF for each word (find out who's rare)
-        for word in self.wordDict:
-            docFreq = freqDict.get(word, 0)
-            if docFreq > 0:
-                self.idfVibes[word] = math.log10(self.totalDocs / docFreq)
+        # Step 3: Calculate IDF for each word
+        for word in self.vocabulary:
+            df = dfDict.get(word, 0)
+            if df > 0:
+                self.idfValues[word] = math.log10(self.numDocs / df)
             else:
-                self.idfVibes[word] = 0.0
+                self.idfValues[word] = 0.0
 
-        print(f"Fitted on {self.totalDocs} documents - we ready to roll!")
+        print(f"Fitted on {self.numDocs} documents")
 
-    def makeTfidfVector(self, singleDoc: List[str]) -> np.ndarray:
+    def getTfidfVector(self, document: List[str]) -> np.ndarray:
         """
-        Turn a document into a TF-IDF vector - convert words to numbers
+        Calculate TF-IDF vector for a single document
 
         Args:
-            singleDoc: Doc as list of words
+            document: List of words
 
         Returns:
-            Numpy array of TF-IDF scores (the numerical representation)
+            NumPy array of TF-IDF values
         """
-        vectorSwag = np.zeros(len(self.wordDict))
+        vector = np.zeros(len(self.vocabulary))
 
-        for word in singleDoc:
-            if word in self.wordDict:
-                wordPosition = self.wordDict[word]
-                termFreq = self.getTermFrequency(word, singleDoc)
-                idfValue = self.getIdfScore(word)
-                vectorSwag[wordPosition] = termFreq * idfValue
+        for word in document:
+            if word in self.vocabulary:
+                idx = self.vocabulary[word]
+                tf = self.getTermFrequency(word, document)
+                idf = self.getIdf(word)
+                vector[idx] = tf * idf
 
-        return vectorSwag
+        return vector
 
-    def transformDocs(self, docsList: List[List[str]]) -> np.ndarray:
+    def transform(self, documents: List[List[str]]) -> np.ndarray:
         """
-        Transform a whole bunch of docs into TF-IDF matrix
+        Transform documents into TF-IDF matrix
 
         Args:
-            docsList: All the docs we convertin
+            documents: List of documents
 
         Returns:
-            Big matrix where each row is a doc (the whole squad in number form)
+            TF-IDF matrix (N x V) where N = num documents, V = vocabulary size
         """
-        bigMatrix = np.zeros((len(docsList), len(self.wordDict)))
+        tfidfMatrix = np.zeros((len(documents), len(self.vocabulary)))
 
-        for docIdx, singleDoc in enumerate(docsList):
-            bigMatrix[docIdx] = self.makeTfidfVector(singleDoc)
+        for i, doc in enumerate(documents):
+            tfidfMatrix[i] = self.getTfidfVector(doc)
 
-        return bigMatrix
+        return tfidfMatrix
 
-    def fitAndTransform(self, docsList: List[List[str]]) -> np.ndarray:
+    def fitTransform(self, documents: List[List[str]]) -> np.ndarray:
         """
-        Do the fit and transform in one shot - efficiency gang
+        Fit and transform in one step
 
         Args:
-            docsList: Docs to process
+            documents: List of documents
 
         Returns:
-            TF-IDF matrix ready to go
+            TF-IDF matrix
         """
-        self.fitTheData(docsList)
-        return self.transformDocs(docsList)
+        self.fit(documents)
+        return self.transform(documents)
 
 
-def calculateCosineSimilarity(firstVec: np.ndarray, secondVec: np.ndarray) -> float:
+def calculateCosineSimilarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
     """
-    Calculate cosine similarity - see how similar two vectors are
+    Calculate cosine similarity between two vectors
+
     Formula: cos(θ) = (A · B) / (||A|| * ||B||)
 
     Args:
-        firstVec: First vector we comparin
-        secondVec: Second vector we comparin
+        vec1: First vector
+        vec2: Second vector
 
     Returns:
-        Similarity score from -1 to 1 (1 = basically twins, 0 = no relation, -1 = opposites)
+        Cosine similarity value between -1 and 1
     """
-    dotProductVibes = np.dot(firstVec, secondVec)
-    magnitudeFirst = np.linalg.norm(firstVec)
-    magnitudeSecond = np.linalg.norm(secondVec)
+    dotProduct = np.dot(vec1, vec2)
+    norm1 = np.linalg.norm(vec1)
+    norm2 = np.linalg.norm(vec2)
 
-    if magnitudeFirst == 0 or magnitudeSecond == 0:
-        return 0.0  # can't divide by zero, that ain't it chief
+    if norm1 == 0 or norm2 == 0:
+        return 0.0
 
-    return dotProductVibes / (magnitudeFirst * magnitudeSecond)
+    return dotProduct / (norm1 * norm2)
 
 
-def questionOneLettsGo():
+def questionOne_TfidfCosineSimilarity():
     """
-    Q1: Build TF-IDF vectorizer and check how similar sentences are
+    Q1: Implement TF-IDF vectorizer and compute cosine similarity
     """
     print("\n" + "="*80)
-    print("QUESTION 1: TF-IDF AND COSINE SIMILARITY - LET'S GET IT")
+    print("QUESTION 1: TF-IDF AND COSINE SIMILARITY")
     print("="*80 + "\n")
 
-    # Load that CoNLL2003 dataset (classic NLP dataset fr fr)
-    print("Loadin CoNLL2003 dataset... hold up...")
-    datasetStash = load_dataset("conll2003")
+    # Load CoNLL2003 dataset
+    print("Loading CoNLL2003 dataset...")
+    dataset = load_dataset("conll2003")
 
-    # Grab the training data
-    trainingDataRaw = datasetStash['train']
+    # Extract tokens from training set
+    trainData = dataset['train']
 
-    # Each row becomes a document (we treating each sentence as its own vibe)
-    docsCollection = []
-    for idx in range(min(1000, len(trainingDataRaw))):  # using first 1000 cuz we aint got all day
-        tokensFromDoc = trainingDataRaw[idx]['tokens']
-        docsCollection.append([token.lower() for token in tokensFromDoc])
+    # Treat each row as a document (list of tokens)
+    documents = []
+    for i in range(min(1000, len(trainData))):  # Using first 1000 for efficiency
+        tokens = trainData[i]['tokens']
+        documents.append([token.lower() for token in tokens])
 
-    print(f"Loaded {len(docsCollection)} documents from CoNLL2003, we eatin good!")
+    print(f"Loaded {len(documents)} documents from CoNLL2003")
 
-    # Initialize and train our TF-IDF boss
-    vectorizerGoat = TfIdfVectorBoss()
-    tfidfMatrixBig = vectorizerGoat.fitAndTransform(docsCollection)
+    # Initialize and fit TF-IDF vectorizer
+    vectorizer = TfidfVectorizer()
+    tfidfMatrix = vectorizer.fitTransform(documents)
 
-    print(f"TF-IDF Matrix shape: {tfidfMatrixBig.shape}")
-    print(f"Matrix vibes: {tfidfMatrixBig.shape[0]} documents x {tfidfMatrixBig.shape[1]} features\n")
+    print(f"TF-IDF Matrix shape: {tfidfMatrix.shape}")
+    print(f"Matrix dimensions: {tfidfMatrix.shape[0]} documents x {tfidfMatrix.shape[1]} features\n")
 
-    # Test sentences to compare (the moment of truth)
-    testSentencePairs = [
+    # Test sentences for cosine similarity
+    testPairs = [
         ("I love football", "I do not love football"),
         ("I follow cricket", "I follow baseball")
     ]
 
-    print("Computing cosine similarities - let's see who's similar:\n")
+    print("Computing cosine similarities:\n")
 
-    for firstSentence, secondSentence in testSentencePairs:
-        # Break sentences into words and make em lowercase
-        tokensFirst = firstSentence.lower().split()
-        tokensSecond = secondSentence.lower().split()
+    for sent1, sent2 in testPairs:
+        # Tokenize and lowercase
+        tokens1 = sent1.lower().split()
+        tokens2 = sent2.lower().split()
 
-        # Convert to TF-IDF vectors
-        vecFirst = vectorizerGoat.makeTfidfVector(tokensFirst)
-        vecSecond = vectorizerGoat.makeTfidfVector(tokensSecond)
+        # Get TF-IDF vectors
+        vec1 = vectorizer.getTfidfVector(tokens1)
+        vec2 = vectorizer.getTfidfVector(tokens2)
 
-        # Calculate how similar they are
-        similarityScore = calculateCosineSimilarity(vecFirst, vecSecond)
+        # Calculate cosine similarity
+        similarity = calculateCosineSimilarity(vec1, vec2)
 
-        print(f"Sentence 1: '{firstSentence}'")
-        print(f"Sentence 2: '{secondSentence}'")
-        print(f"Cosine Similarity: {similarityScore:.4f}")
-        print(f"Vibe check: {'Similar vibes' if similarityScore > 0.5 else 'Different energy'}\n")
+        print(f"Sentence 1: '{sent1}'")
+        print(f"Sentence 2: '{sent2}'")
+        print(f"Cosine Similarity: {similarity:.4f}")
+        print(f"Interpretation: {'Similar' if similarity > 0.5 else 'Dissimilar'}\n")
 
-    return vectorizerGoat, tfidfMatrixBig
+    return vectorizer, tfidfMatrix
 
 
 # ============================================================================
 # QUESTION 2: PPMI (POSITIVE POINTWISE MUTUAL INFORMATION) (5 points)
 # ============================================================================
 
-def calculatePpmiScores(wordsList: List[str]) -> Dict[Tuple[str, str], float]:
+def calculatePpmi(words: List[str]) -> Dict[Tuple[str, str], float]:
     """
-    Calculate PPMI - basically finds which words like to hang out together
+    Calculate Positive Pointwise Mutual Information for word pairs
 
-    PPMI(x, y) = max(PMI(x, y), 0)  # we only keep positive vibes
-    PMI(x, y) = log2(p(x, y) / (p(x) * p(y)))  # how much more they appear together than random
+    PPMI(x, y) = max(PMI(x, y), 0)
+    PMI(x, y) = log2(p(x, y) / (p(x) * p(y)))
 
     Where:
-    - p(x) = how often word x shows up / total words
-    - p(y) = how often word y shows up / total words
-    - p(x, y) = how often x and y are next to each other / total pairs
+    - p(x) = count(x) / total_words
+    - p(y) = count(y) / total_words
+    - p(x, y) = count(x, y) / total_pairs
 
     Args:
-        wordsList: List of words to analyze (the whole squad)
+        words: List of words
 
     Returns:
-        Dictionary with (word1, word2) -> PPMI score
+        Dictionary mapping (word_x, word_y) tuples to PPMI values
     """
     print("\n" + "="*80)
-    print("QUESTION 2: PPMI CALCULATION - WORD ASSOCIATION VIBES")
+    print("QUESTION 2: PPMI CALCULATION")
     print("="*80 + "\n")
 
-    # Count how many times each word appears (popularity contest)
-    wordCountTracker = Counter(wordsList)
-    totalWordCount = len(wordsList)
+    # Count individual words
+    wordCounts = Counter(words)
+    totalWords = len(words)
 
-    # Count word pairs that appear next to each other (who hangs with who)
-    pairCountTracker = Counter()
-    for idx in range(len(wordsList) - 1):
-        wordPair = (wordsList[idx], wordsList[idx + 1])
-        pairCountTracker[wordPair] += 1
+    # Count word pairs (co-occurrence)
+    pairCounts = Counter()
+    for i in range(len(words) - 1):
+        pair = (words[i], words[i + 1])
+        pairCounts[pair] += 1
 
-    totalPairsCount = sum(pairCountTracker.values())
+    totalPairs = sum(pairCounts.values())
 
-    # Calculate PPMI for each pair (find the real homies)
-    ppmiResultDict = {}
+    # Calculate PPMI for each pair
+    ppmiDict = {}
 
-    for (firstWord, secondWord), pairAppearances in pairCountTracker.items():
-        # Calculate probabilities (math time)
-        probFirst = wordCountTracker[firstWord] / totalWordCount
-        probSecond = wordCountTracker[secondWord] / totalWordCount
-        probPair = pairAppearances / totalPairsCount
+    for (wordX, wordY), pairCount in pairCounts.items():
+        # Calculate probabilities
+        probX = wordCounts[wordX] / totalWords
+        probY = wordCounts[wordY] / totalWords
+        probXY = pairCount / totalPairs
 
-        # Calculate PMI then PPMI
-        if probFirst > 0 and probSecond > 0 and probPair > 0:
-            pmiScore = math.log2(probPair / (probFirst * probSecond))
-            # PPMI = only keep positive scores (no negativity here)
-            ppmiScore = max(pmiScore, 0)
-            ppmiResultDict[(firstWord, secondWord)] = ppmiScore
+        # Calculate PMI
+        if probX > 0 and probY > 0 and probXY > 0:
+            pmi = math.log2(probXY / (probX * probY))
+            # PPMI = max(PMI, 0)
+            ppmi = max(pmi, 0)
+            ppmiDict[(wordX, wordY)] = ppmi
 
-    return ppmiResultDict
+    return ppmiDict
 
 
-def questionTwoShowtime():
+def questionTwo_Ppmi():
     """
-    Q2: Demonstrate PPMI calculation with some examples
+    Q2: Demonstrate PPMI calculation with examples
     """
-    # Example from the assignment sheet
-    exampleWordList = ['a', 'b', 'a', 'c']
-    ppmiResults = calculatePpmiScores(exampleWordList)
+    # Example from assignment
+    exampleWords = ['a', 'b', 'a', 'c']
+    ppmiResult = calculatePpmi(exampleWords)
 
     print("Example: words = ['a', 'b', 'a', 'c']")
-    print("\nPPMI Results (who's vibin together):")
-    for wordPair, ppmiVal in sorted(ppmiResults.items()):
-        print(f"  {wordPair}: {ppmiVal:.4f}")
+    print("\nPPMI Results:")
+    for pair, ppmiValue in sorted(ppmiResult.items()):
+        print(f"  {pair}: {ppmiValue:.4f}")
 
-    # Try a more realistic example (actual sentence vibes)
+    # Test with a more realistic example
     print("\n" + "-"*80 + "\n")
-    sentenceExample = "the cat sat on the mat the dog sat on the log".split()
-    ppmiResults2 = calculatePpmiScores(sentenceExample)
+    textExample = "the cat sat on the mat the dog sat on the log".split()
+    ppmiResult2 = calculatePpmi(textExample)
 
-    print(f"Example: {' '.join(sentenceExample)}")
-    print("\nPPMI Results (top 10 word combos):")
-    for wordPair, ppmiVal in sorted(ppmiResults2.items(), key=lambda x: x[1], reverse=True)[:10]:
-        print(f"  {wordPair}: {ppmiVal:.4f}")
+    print(f"Example: {' '.join(textExample)}")
+    print("\nPPMI Results:")
+    for pair, ppmiValue in sorted(ppmiResult2.items(), key=lambda x: x[1], reverse=True)[:10]:
+        print(f"  {pair}: {ppmiValue:.4f}")
 
-    return ppmiResults, ppmiResults2
+    return ppmiResult, ppmiResult2
 
 
 # ============================================================================
 # QUESTION 3: NAMED ENTITY RECOGNITION USING LSTM (20 points)
 # ============================================================================
 
-class NerModelBeast:
+class NerModel:
     """
-    Named Entity Recognition model using LSTM - the big brain neural net
+    Named Entity Recognition model using LSTM
 
-    Architecture (the lineup):
-    - Embedding layer (turn words into vectors using Word2Vec)
-    - 3 LSTM layers (the memory masters)
-    - 1 Dense layer (processing power)
-    - Output layer with softmax (make predictions for 9 entity types)
+    Architecture:
+    - Embedding layer (using Word2Vec)
+    - 3 LSTM layers
+    - 1 Dense layer
+    - Output layer with softmax (9 classes)
     """
 
-    def __init__(self, vocabSizeTotal: int, embeddingDimensions: int = 300,
-                 maxSeqLength: int = 100, numTagTypes: int = 9):
+    def __init__(self, vocabSize: int, embeddingDim: int = 300,
+                 maxLength: int = 100, numTags: int = 9):
         """
-        Initialize the NER model - set up the squad
+        Initialize NER model
 
         Args:
-            vocabSizeTotal: How many unique words we got
-            embeddingDimensions: Size of word vectors (300 is Word2Vec standard)
-            maxSeqLength: Max sentence length we handle
-            numTagTypes: Number of entity types (9 for CoNLL2003)
+            vocabSize: Size of vocabulary
+            embeddingDim: Dimension of word embeddings (default: 300 for Word2Vec)
+            maxLength: Maximum sequence length
+            numTags: Number of NER tags (9 for CoNLL2003)
         """
-        self.vocabSizeTotal = vocabSizeTotal
-        self.embeddingDimensions = embeddingDimensions
-        self.maxSeqLength = maxSeqLength
-        self.numTagTypes = numTagTypes
-        self.neuralModel = None
-        self.wordToIndexMap = {}
-        self.indexToWordMap = {}
-        self.tagToIndexMap = {}
-        self.indexToTagMap = {}
+        self.vocabSize = vocabSize
+        self.embeddingDim = embeddingDim
+        self.maxLength = maxLength
+        self.numTags = numTags
+        self.model = None
+        self.word2idx = {}
+        self.idx2word = {}
+        self.tag2idx = {}
+        self.idx2tag = {}
 
-    def buildTheModel(self, embeddingMatrixPretrained=None):
+    def buildModel(self, embeddingMatrix=None):
         """
-        Build the LSTM model architecture - construct the beast
+        Build the LSTM model architecture
 
         Args:
-            embeddingMatrixPretrained: Pre-trained Word2Vec embeddings (optional but fire)
+            embeddingMatrix: Pre-trained embedding matrix (optional)
         """
-        neuralStack = Sequential()
+        model = Sequential()
 
-        # Embedding layer (word -> vector conversion)
-        if embeddingMatrixPretrained is not None:
-            neuralStack.add(Embedding(
-                input_dim=self.vocabSizeTotal,
-                output_dim=self.embeddingDimensions,
-                weights=[embeddingMatrixPretrained],
-                input_length=self.maxSeqLength,
-                trainable=False,  # keep the pretrained weights frozen
-                mask_zero=True  # ignore padding
+        # Embedding layer
+        if embeddingMatrix is not None:
+            model.add(Embedding(
+                input_dim=self.vocabSize,
+                output_dim=self.embeddingDim,
+                weights=[embeddingMatrix],
+                input_length=self.maxLength,
+                trainable=False,
+                mask_zero=True
             ))
         else:
-            neuralStack.add(Embedding(
-                input_dim=self.vocabSizeTotal,
-                output_dim=self.embeddingDimensions,
-                input_length=self.maxSeqLength,
+            model.add(Embedding(
+                input_dim=self.vocabSize,
+                output_dim=self.embeddingDim,
+                input_length=self.maxLength,
                 mask_zero=True
             ))
 
-        # LSTM Layer 1 (first memory unit, biggest one)
-        neuralStack.add(LSTM(128, return_sequences=True, dropout=0.2))
+        # LSTM Layer 1
+        model.add(LSTM(128, return_sequences=True, dropout=0.2))
 
-        # LSTM Layer 2 (second memory unit, medium sized)
-        neuralStack.add(LSTM(64, return_sequences=True, dropout=0.2))
+        # LSTM Layer 2
+        model.add(LSTM(64, return_sequences=True, dropout=0.2))
 
-        # LSTM Layer 3 (third memory unit, smallest but still fire)
-        neuralStack.add(LSTM(32, return_sequences=True, dropout=0.2))
+        # LSTM Layer 3
+        model.add(LSTM(32, return_sequences=True, dropout=0.2))
 
-        # Dense layer (final processing before predictions)
-        neuralStack.add(Dense(64, activation='relu'))
-        neuralStack.add(Dropout(0.3))  # prevent overfitting, keep it real
+        # Dense layer
+        model.add(Dense(64, activation='relu'))
+        model.add(Dropout(0.3))
 
-        # Output layer (make predictions for each tag type)
-        neuralStack.add(Dense(self.numTagTypes, activation='softmax'))
+        # Output layer with softmax
+        model.add(Dense(self.numTags, activation='softmax'))
 
-        # Compile the model (set up training parameters)
-        neuralStack.compile(
-            loss='categorical_crossentropy',  # loss function for multi-class
-            optimizer='adam',  # Adam optimizer is goated
+        # Compile model
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
             metrics=['accuracy']
         )
 
-        self.neuralModel = neuralStack
-        return neuralStack
+        self.model = model
+        return model
 
-    def showModelStats(self):
-        """Print model architecture - show what we workin with"""
-        if self.neuralModel:
-            self.neuralModel.summary()
+    def summary(self):
+        """Print model summary"""
+        if self.model:
+            self.model.summary()
 
 
-def prepareNerDataset(datasetRaw, maxSamplesToUse=5000):
+def prepareNerData(dataset, maxSamples=5000):
     """
-    Prepare CoNLL2003 data for NER training - get the data ready
+    Prepare CoNLL2003 data for NER training
 
     Args:
-        datasetRaw: CoNLL2003 dataset from HuggingFace
-        maxSamplesToUse: Max number of samples (we aint training on everything, that takes forever)
+        dataset: CoNLL2003 dataset
+        maxSamples: Maximum number of samples to use
 
     Returns:
-        Tuple of (sentences, tags, word2idx, tag2idx) - all the data we need
+        Tuple of (sentences, tags, word2idx, tag2idx)
     """
-    sentencesList = []
-    tagsList = []
+    sentences = []
+    tags = []
 
-    # Extract sentences and their entity tags
-    trainingDataRaw = datasetRaw['train']
-    numSamples = min(maxSamplesToUse, len(trainingDataRaw))
+    # Extract sentences and tags
+    trainData = dataset['train']
+    numSamples = min(maxSamples, len(trainData))
 
-    for idx in range(numSamples):
-        tokensLowercase = [token.lower() for token in trainingDataRaw[idx]['tokens']]
-        nerTagSequence = trainingDataRaw[idx]['ner_tags']
-        sentencesList.append(tokensLowercase)
-        tagsList.append(nerTagSequence)
+    for i in range(numSamples):
+        tokens = [token.lower() for token in trainData[i]['tokens']]
+        nerTags = trainData[i]['ner_tags']
+        sentences.append(tokens)
+        tags.append(nerTags)
 
-    # Build vocabulary mapping (create the word roster)
-    allWordsUnique = set(word for sent in sentencesList for word in sent)
-    wordToIndexDict = {word: idx + 2 for idx, word in enumerate(sorted(allWordsUnique))}
-    wordToIndexDict['<PAD>'] = 0  # padding token (for making all sentences same length)
-    wordToIndexDict['<UNK>'] = 1  # unknown token (for words we never seen)
+    # Build vocabularies
+    allWords = set(word for sent in sentences for word in sent)
+    word2idx = {word: idx + 2 for idx, word in enumerate(sorted(allWords))}
+    word2idx['<PAD>'] = 0
+    word2idx['<UNK>'] = 1
 
-    # Tag mapping (0-8 for 9 NER entity types)
-    tagToIndexDict = {i: i for i in range(9)}
+    # Tag mapping (0-8 for 9 NER tags)
+    tag2idx = {i: i for i in range(9)}
 
-    return sentencesList, tagsList, wordToIndexDict, tagToIndexDict
+    return sentences, tags, word2idx, tag2idx
 
 
-def createEmbeddingMatrix(wordToIdxMap, word2vecModelLoaded, embeddingDims=300):
+def createEmbeddingMatrix(word2idx, word2vecModel, embeddingDim=300):
     """
-    Create embedding matrix from Word2Vec model - convert our vocab to vectors
+    Create embedding matrix from Word2Vec model
 
     Args:
-        wordToIdxMap: Word to index mapping
-        word2vecModelLoaded: Loaded Word2Vec model (Google News 300D)
-        embeddingDims: Embedding dimensions (300 is standard)
+        word2idx: Word to index mapping
+        word2vecModel: Loaded Word2Vec model
+        embeddingDim: Embedding dimension
 
     Returns:
-        Embedding matrix (array of word vectors, ready to plug into model)
+        Embedding matrix
     """
-    totalVocabSize = len(wordToIdxMap)
-    embeddingMatrixFull = np.zeros((totalVocabSize, embeddingDims))
+    vocabSize = len(word2idx)
+    embeddingMatrix = np.zeros((vocabSize, embeddingDim))
 
-    wordsFoundCount = 0
-    for word, wordIdx in wordToIdxMap.items():
-        if word in word2vecModelLoaded:
-            embeddingMatrixFull[wordIdx] = word2vecModelLoaded[word]
-            wordsFoundCount += 1
+    found = 0
+    for word, idx in word2idx.items():
+        if word in word2vecModel:
+            embeddingMatrix[idx] = word2vecModel[word]
+            found += 1
         else:
-            # Random init for words not in Word2Vec (gotta improvise)
-            embeddingMatrixFull[wordIdx] = np.random.normal(0, 0.1, embeddingDims)
+            # Random initialization for unknown words
+            embeddingMatrix[idx] = np.random.normal(0, 0.1, embeddingDim)
 
-    coveragePercent = 100 * wordsFoundCount / totalVocabSize
-    print(f"Found {wordsFoundCount}/{totalVocabSize} words in Word2Vec ({coveragePercent:.2f}% coverage - not bad!)")
-    return embeddingMatrixFull
+    print(f"Found {found}/{vocabSize} words in Word2Vec model ({100*found/vocabSize:.2f}%)")
+    return embeddingMatrix
 
 
-def questionThreeBigBrainTime():
+def questionThree_NerLstm():
     """
-    Q3: Implement Named Entity Recognition using LSTM - the final boss
+    Q3: Implement Named Entity Recognition using LSTM
     """
     print("\n" + "="*80)
-    print("QUESTION 3: NAMED ENTITY RECOGNITION USING LSTM - BIG BRAIN TIME")
+    print("QUESTION 3: NAMED ENTITY RECOGNITION USING LSTM")
     print("="*80 + "\n")
 
-    if not kerasIsVibing:
-        print("Bruh, Keras/TensorFlow ain't installed. Install the packages first!")
+    if not kerasAvailable:
+        print("ERROR: Keras/TensorFlow not available. Please install required packages.")
         return None
 
-    # Load the dataset
-    print("Loading CoNLL2003 dataset... this the good stuff...")
-    datasetMain = load_dataset("conll2003")
+    # Load dataset
+    print("Loading CoNLL2003 dataset...")
+    dataset = load_dataset("conll2003")
 
-    # Prepare the data for training
-    print("Preparing data... gettin it ready...")
-    sentencesAll, tagsAll, wordToIdxMap, tagToIdxMap = prepareNerDataset(datasetMain, maxSamplesToUse=5000)
-    idxToTagMap = {v: k for k, v in tagToIdxMap.items()}
+    # Prepare data
+    print("Preparing data...")
+    sentences, tags, word2idx, tag2idx = prepareNerData(dataset, maxSamples=5000)
+    idx2tag = {v: k for k, v in tag2idx.items()}
 
-    print(f"Number of sentences: {len(sentencesAll)} - we got mad data!")
-    print(f"Vocabulary size: {len(wordToIdxMap)} - that's a lot of words")
-    print(f"Number of NER tags: {len(tagToIdxMap)} - 9 entity types to predict")
+    print(f"Number of sentences: {len(sentences)}")
+    print(f"Vocabulary size: {len(word2idx)}")
+    print(f"Number of NER tags: {len(tag2idx)}")
 
-    # Find the longest sentence
-    maxLengthFound = max(len(sent) for sent in sentencesAll)
-    maxLengthCapped = min(maxLengthFound, 100)  # cap at 100 for efficiency (aint nobody got time for super long sentences)
-    print(f"Maximum sequence length: {maxLengthCapped}\n")
+    # Determine max length
+    maxLength = max(len(sent) for sent in sentences)
+    maxLength = min(maxLength, 100)  # Cap at 100 for efficiency
+    print(f"Maximum sequence length: {maxLength}\n")
 
-    # Convert sentences to number sequences (neural nets need numbers not words)
+    # Convert sentences to sequences
     sequencesX = []
     sequencesY = []
 
-    for singleSent, singleTagSeq in zip(sentencesAll, tagsAll):
-        # Turn words into their index numbers
-        sentenceIndices = [wordToIdxMap.get(word, wordToIdxMap['<UNK>']) for word in singleSent]
-        sequencesX.append(sentenceIndices)
-        sequencesY.append(singleTagSeq)
+    for sent, tagSeq in zip(sentences, tags):
+        # Convert words to indices
+        sentIndices = [word2idx.get(word, word2idx['<UNK>']) for word in sent]
+        sequencesX.append(sentIndices)
+        sequencesY.append(tagSeq)
 
-    # Pad sequences so they all the same length (neural nets need uniform input)
-    xPaddedArrays = pad_sequences(sequencesX, maxlen=maxLengthCapped, padding='post', value=wordToIdxMap['<PAD>'])
-    yPaddedArrays = pad_sequences(sequencesY, maxlen=maxLengthCapped, padding='post', value=0)
+    # Pad sequences
+    xPadded = pad_sequences(sequencesX, maxlen=maxLength, padding='post', value=word2idx['<PAD>'])
+    yPadded = pad_sequences(sequencesY, maxlen=maxLength, padding='post', value=0)
 
-    # Convert tags to one-hot encoding (categorical format for neural net)
-    yCategoricalArrays = np.array([to_categorical(seq, num_classes=9) for seq in yPaddedArrays])
+    # Convert tags to categorical
+    yCategorical = np.array([to_categorical(seq, num_classes=9) for seq in yPadded])
 
-    # Split into train and test (80/20 split is the move)
-    xTrainData, xTestData, yTrainData, yTestData = train_test_split(
-        xPaddedArrays, yCategoricalArrays, test_size=0.2, random_state=42
+    # Split data 80/20
+    xTrain, xTest, yTrain, yTest = train_test_split(
+        xPadded, yCategorical, test_size=0.2, random_state=42
     )
 
-    print(f"Training samples: {len(xTrainData)} - this the main dataset")
-    print(f"Testing samples: {len(xTestData)} - we holdin this back to test\n")
+    print(f"Training samples: {len(xTrain)}")
+    print(f"Testing samples: {len(xTest)}\n")
 
-    # Load Word2Vec embeddings (this might take a minute first time)
-    print("Loading Word2Vec embeddings (Google News 300D, this might take a bit first time)...")
+    # Load Word2Vec embeddings
+    print("Loading Word2Vec embeddings (this may take a while)...")
     try:
-        word2vecLoaded = api.load("word2vec-google-news-300")
-        print("Word2Vec loaded successfully! We got the good embeddings\n")
+        word2vecModel = api.load("word2vec-google-news-300")
+        print("Word2Vec loaded successfully!\n")
 
-        # Create embedding matrix from Word2Vec
-        embeddingMatrixReady = createEmbeddingMatrix(wordToIdxMap, word2vecLoaded)
-    except Exception as errorMsg:
-        print(f"Yo, couldn't load Word2Vec: {errorMsg}")
-        print("Using random embeddings instead - not ideal but we make it work\n")
-        embeddingMatrixReady = None
+        # Create embedding matrix
+        embeddingMatrix = createEmbeddingMatrix(word2idx, word2vecModel)
+    except Exception as e:
+        print(f"Warning: Could not load Word2Vec: {e}")
+        print("Using random embeddings instead.\n")
+        embeddingMatrix = None
 
-    # Build the model
-    print("Building LSTM model... constructin the beast...")
-    nerBeastModel = NerModelBeast(
-        vocabSizeTotal=len(wordToIdxMap),
-        embeddingDimensions=300,
-        maxSeqLength=maxLengthCapped,
-        numTagTypes=9
+    # Build model
+    print("Building LSTM model...")
+    nerModel = NerModel(
+        vocabSize=len(word2idx),
+        embeddingDim=300,
+        maxLength=maxLength,
+        numTags=9
     )
-    nerBeastModel.wordToIndexMap = wordToIdxMap
-    nerBeastModel.indexToTagMap = idxToTagMap
-    nerBeastModel.buildTheModel(embeddingMatrixReady)
-    nerBeastModel.showModelStats()
+    nerModel.word2idx = word2idx
+    nerModel.idx2tag = idx2tag
+    nerModel.buildModel(embeddingMatrix)
+    nerModel.summary()
 
-    # Train the model (this where the magic happens)
-    print("\nTraining model (10 epochs)... let's get it...")
-    trainingHistory = nerBeastModel.neuralModel.fit(
-        xTrainData, yTrainData,
-        validation_split=0.1,  # use 10% of training data for validation
-        epochs=10,  # train for 10 epochs as required
-        batch_size=32,  # process 32 samples at a time
-        verbose=1  # show progress
+    # Train model
+    print("\nTraining model (10 epochs)...")
+    history = nerModel.model.fit(
+        xTrain, yTrain,
+        validation_split=0.1,
+        epochs=10,
+        batch_size=32,
+        verbose=1
     )
 
-    # Evaluate the model on test data
-    print("\nEvaluating model... moment of truth...")
-    predictionsFull = nerBeastModel.neuralModel.predict(xTestData)
-    predictedClasses = np.argmax(predictionsFull, axis=-1)
-    trueClasses = np.argmax(yTestData, axis=-1)
+    # Evaluate model
+    print("\nEvaluating model...")
+    yPred = nerModel.model.predict(xTest)
+    yPredClasses = np.argmax(yPred, axis=-1)
+    yTestClasses = np.argmax(yTest, axis=-1)
 
-    # Flatten predictions and true labels (remove padding)
-    predictionsFlat = []
-    truthFlat = []
+    # Flatten predictions and true labels (ignoring padding)
+    yPredFlat = []
+    yTestFlat = []
 
-    for sampleIdx in range(len(trueClasses)):
-        for tokenIdx in range(len(trueClasses[sampleIdx])):
-            if trueClasses[sampleIdx][tokenIdx] != 0 or tokenIdx < maxLengthCapped:
-                predictionsFlat.append(predictedClasses[sampleIdx][tokenIdx])
-                truthFlat.append(trueClasses[sampleIdx][tokenIdx])
+    for i in range(len(yTestClasses)):
+        for j in range(len(yTestClasses[i])):
+            if yTestClasses[i][j] != 0 or j < maxLength:  # Not padding
+                yPredFlat.append(yPredClasses[i][j])
+                yTestFlat.append(yTestClasses[i][j])
 
-    # Calculate performance metrics (see how we did)
-    accuracyScore = accuracy_score(truthFlat, predictionsFlat)
-    precisionScore, recallScore, f1Score, _ = precision_recall_fscore_support(
-        truthFlat, predictionsFlat, average='macro', zero_division=0
+    # Calculate metrics
+    accuracy = accuracy_score(yTestFlat, yPredFlat)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        yTestFlat, yPredFlat, average='macro', zero_division=0
     )
 
     print("\n" + "="*80)
-    print("RESULTS - LET'S SEE HOW WE DID:")
+    print("RESULTS:")
     print("="*80)
-    print(f"Accuracy: {accuracyScore:.4f} - overall correctness rate")
-    print(f"Macro Precision: {precisionScore:.4f} - how precise our predictions are")
-    print(f"Macro Recall: {recallScore:.4f} - how many entities we caught")
-    print(f"Macro F1-Score: {f1Score:.4f} - the balanced score (precision + recall)")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Macro Precision: {precision:.4f}")
+    print(f"Macro Recall: {recall:.4f}")
+    print(f"Macro F1-Score: {f1:.4f}")
     print("="*80 + "\n")
 
-    return nerBeastModel, trainingHistory, (accuracyScore, precisionScore, recallScore, f1Score)
+    return nerModel, history, (accuracy, precision, recall, f1)
 
 
 # ============================================================================
-# MAIN EXECUTION - RUN EVERYTHING
+# MAIN EXECUTION
 # ============================================================================
 
-def runEverything():
+def main():
     """
-    Main function to run all assignment questions - the whole show
+    Main function to run all assignment questions
     """
     print("\n")
     print("*" * 80)
     print("*" + " " * 78 + "*")
-    print("*" + " " * 15 + "CS 421: NLP - ASSIGNMENT 4 - LET'S GET IT" + " " * 21 + "*")
+    print("*" + " " * 20 + "CS 421: NLP - ASSIGNMENT 4" + " " * 32 + "*")
     print("*" + " " * 78 + "*")
     print("*" * 80)
 
-    resultsDict = {}
+    results = {}
 
     # Question 1: TF-IDF and Cosine Similarity
     try:
-        vectorizerResult, matrixResult = questionOneLettsGo()
-        resultsDict['q1'] = {'vectorizer': vectorizerResult, 'matrix': matrixResult}
-    except Exception as errorMsg:
-        print(f"\nBruh, error in Q1: {errorMsg}")
+        vectorizer, tfidfMatrix = questionOne_TfidfCosineSimilarity()
+        results['q1'] = {'vectorizer': vectorizer, 'matrix': tfidfMatrix}
+    except Exception as e:
+        print(f"\nError in Q1: {e}")
         import traceback
         traceback.print_exc()
 
     # Question 2: PPMI
     try:
-        ppmiResult1, ppmiResult2 = questionTwoShowtime()
-        resultsDict['q2'] = {'ppmi1': ppmiResult1, 'ppmi2': ppmiResult2}
-    except Exception as errorMsg:
-        print(f"\nYo, error in Q2: {errorMsg}")
+        ppmi1, ppmi2 = questionTwo_Ppmi()
+        results['q2'] = {'ppmi1': ppmi1, 'ppmi2': ppmi2}
+    except Exception as e:
+        print(f"\nError in Q2: {e}")
         import traceback
         traceback.print_exc()
 
     # Question 3: NER with LSTM
     try:
-        nerModelFinal, historyObj, metricsResults = questionThreeBigBrainTime()
-        resultsDict['q3'] = {
-            'model': nerModelFinal,
-            'history': historyObj,
-            'metrics': metricsResults
+        nerModel, history, metrics = questionThree_NerLstm()
+        results['q3'] = {
+            'model': nerModel,
+            'history': history,
+            'metrics': metrics
         }
-    except Exception as errorMsg:
-        print(f"\nDang, error in Q3: {errorMsg}")
+    except Exception as e:
+        print(f"\nError in Q3: {e}")
         import traceback
         traceback.print_exc()
 
     print("\n" + "*" * 80)
-    print("*" + " " * 20 + "ASSIGNMENT COMPLETE! WE DID IT FAM!" + " " * 24 + "*")
+    print("*" + " " * 25 + "ASSIGNMENT COMPLETE!" + " " * 33 + "*")
     print("*" * 80 + "\n")
 
-    return resultsDict
+    return results
 
 
 if __name__ == "__main__":
-    finalResults = runEverything()
+    results = main()

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLP Project Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 0;
+            width: 1200px;
+            height: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            gap: 20px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        /* ===== MAIN CONTENT GRID ===== */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ===== CARD STYLING ===== */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* ===== TEXT GENERATION CARD ===== */
+        .text-gen-card {
+            border-left: 4px solid #0ea5e9;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0ea5e9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .badge-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(14, 165, 233, 0.15);
+            color: #0ea5e9;
+            font-weight: 500;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .badge.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .badge.orange {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+
+        .demo-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .demo-label {
+            font-size: 11px;
+            color: #808080;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        .demo-content {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: #ffffff;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .input-text {
+            color: #0ea5e9;
+        }
+
+        .output-text {
+            color: #10b981;
+        }
+
+        .perplexity-text {
+            color: #f97316;
+            font-weight: 600;
+        }
+
+        /* ===== POS TAGGING CARD ===== */
+        .pos-card {
+            border-left: 4px solid #10b981;
+            flex: 1;
+        }
+
+        .card-title.pos {
+            color: #10b981;
+        }
+
+        .badge.pos-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .sentence-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .word-tag-pair {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 6px;
+        }
+
+        .word {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .tag {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .tag.noun {
+            background: rgba(14, 165, 233, 0.2);
+            color: #0ea5e9;
+        }
+
+        .tag.verb {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .tag.modal {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .tag.det {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        /* ===== METRICS CARD ===== */
+        .metrics-card {
+            border-left: 4px solid #f97316;
+            grid-column: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-title.metrics {
+            color: #f97316;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #a0a0a0;
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        .metric-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .metric-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease-out;
+            animation: fillBar 0.8s ease-out backwards;
+        }
+
+        .metric-fill.hmm {
+            background: linear-gradient(90deg, #f97316, #ff6b35);
+            width: 93.2%;
+        }
+
+        .metric-fill.crf {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 95.1%;
+        }
+
+        .metric-fill.time {
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            width: 85%;
+        }
+
+        .metric-fill.vocab {
+            background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+            width: 80%;
+        }
+
+        .metric-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .metric-fill.hmm ~ .metric-value { color: #f97316; }
+        .metric-fill.crf ~ .metric-value { color: #10b981; }
+        .metric-fill.time ~ .metric-value { color: #0ea5e9; }
+        .metric-fill.vocab ~ .metric-value { color: #a78bfa; }
+
+        /* ===== TECH STACK ===== */
+        .tech-stack-card {
+            grid-column: 2 / 3;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-title.tech {
+            color: #a78bfa;
+        }
+
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tech-badge {
+            font-size: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(167, 139, 250, 0.15);
+            color: #c4b5fd;
+            font-weight: 600;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            background: rgba(167, 139, 250, 0.25);
+            border-color: rgba(167, 139, 250, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* ===== ARCHITECTURE ===== */
+        .architecture-card {
+            grid-column: 1 / 2;
+        }
+
+        .card-title.arch {
+            color: #06b6d4;
+        }
+
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pipeline-step {
+            flex: 1;
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 8px 6px;
+            border-radius: 6px;
+            text-align: center;
+            color: #22d3ee;
+            transition: all 0.3s ease;
+        }
+
+        .pipeline-step:hover {
+            background: rgba(6, 182, 212, 0.25);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: scale(1.05);
+        }
+
+        .arrow {
+            color: #606060;
+            font-size: 10px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 11px;
+            color: #707070;
+        }
+
+        .footer-tech {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-link {
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #3b82f6;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fillBar {
+            from {
+                width: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* ===== SCROLL CONTAINER FIX ===== */
+        .right-column {
+            max-height: calc(100% - 80px);
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>NLP Pipeline: Reuters Corpus Analysis</h1>
+            <p>Built an NLP pipeline trained on Reuters news corpus to generate coherent text and perform part-of-speech tagging on journalism content.</p>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
+                <!-- TEXT GENERATION CARD -->
+                <div class="card text-gen-card">
+                    <div class="card-title">🚀 News Text Generation</div>
+                    <div class="badge-group">
+                        <div class="badge">Reuters Corpus</div>
+                        <div class="badge">Top-K Sampling</div>
+                    </div>
+                    
+                    <div class="demo-section">
+                        <div class="demo-label">Input Seed</div>
+                        <div class="demo-content"><span class="input-text">The</span></div>
+                    </div>
+
+                    <div class="demo-section">
+                        <div class="demo-label">Generated Text</div>
+                        <div class="demo-content"><span class="output-text">The market showed strong growth in trading</span></div>
+                    </div>
+
+                    <div class="demo-section">
+                        <div class="demo-label">Perplexity Score</div>
+                        <div class="demo-content"><span class="perplexity-text">38.45</span></div>
+                    </div>
+                </div>
+
+                <!-- METRICS CARD -->
+                <div class="card metrics-card">
+                    <div class="card-title metrics">📊 Performance Metrics</div>
+                    
+                    <div class="metric-item">
+                        <div class="metric-label">HMM Accuracy</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill hmm"></div>
+                        </div>
+                        <div class="metric-value">93.2%</div>
+                    </div>
+
+                    <div class="metric-item">
+                        <div class="metric-label">CRF Accuracy</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill crf"></div>
+                        </div>
+                        <div class="metric-value">95.1%</div>
+                    </div>
+
+                    <div class="metric-item">
+                        <div class="metric-label">Training Time</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill time"></div>
+                        </div>
+                        <div class="metric-value">&lt;2min</div>
+                    </div>
+
+                    <div class="metric-item">
+                        <div class="metric-label">Vocabulary</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill vocab"></div>
+                        </div>
+                        <div class="metric-value">12k</div>
+                    </div>
+                </div>
+
+                <!-- ARCHITECTURE CARD -->
+                <div class="card architecture-card">
+                    <div class="card-title arch">⚡ Processing Pipeline</div>
+                    <div class="pipeline">
+                        <div class="pipeline-step">Text</div>
+                        <div class="arrow">→</div>
+                        <div class="pipeline-step">Tokenize</div>
+                        <div class="arrow">→</div>
+                        <div class="pipeline-step">Features</div>
+                        <div class="arrow">→</div>
+                        <div class="pipeline-step">Model</div>
+                        <div class="arrow">→</div>
+                        <div class="pipeline-step">Output</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
+                <!-- POS TAGGING CARD -->
+                <div class="card pos-card">
+                    <div class="card-title pos">🎯 Journalism Content Tagging</div>
+                    <div class="badge-group">
+                        <div class="badge orange">HMM + Viterbi</div>
+                        <div class="badge green">CRF</div>
+                    </div>
+
+                    <div class="demo-section">
+                        <div class="demo-label">News Sentence</div>
+                        <div class="demo-content">Stock prices rose sharply today</div>
+                    </div>
+
+                    <div class="demo-section">
+                        <div class="demo-label">Predicted Tags</div>
+                        <div class="sentence-display">
+                            <div class="word-tag-pair">
+                                <div class="word">Stock</div>
+                                <div class="tag noun">NN</div>
+                            </div>
+                            <div class="word-tag-pair">
+                                <div class="word">prices</div>
+                                <div class="tag noun">NNS</div>
+                            </div>
+                            <div class="word-tag-pair">
+                                <div class="word">rose</div>
+                                <div class="tag verb">VBD</div>
+                            </div>
+                            <div class="word-tag-pair">
+                                <div class="word">sharply</div>
+                                <div class="tag verb">RB</div>
+                            </div>
+                            <div class="word-tag-pair">
+                                <div class="word">today</div>
+                                <div class="tag noun">NN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TECH STACK CARD -->
+                <div class="card tech-stack-card">
+                    <div class="card-title tech">⚙️ Technical Highlights</div>
+                    <div class="tech-badges">
+                        <div class="tech-badge">Dynamic Programming</div>
+                        <div class="tech-badge">Viterbi Algorithm</div>
+                        <div class="tech-badge">Log Space Computation</div>
+                        <div class="tech-badge">Feature Engineering</div>
+                        <div class="tech-badge">MLE Estimation</div>
+                        <div class="tech-badge">Epsilon Smoothing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="footer-tech">
+                <span>Built with:</span>
+                <strong>Python</strong> • <strong>NumPy</strong> • <strong>NLTK</strong> • <strong>scikit-learn</strong>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">📁 View on GitHub</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
