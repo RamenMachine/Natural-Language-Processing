@@ -56,7 +56,7 @@ ASN4/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/Natural-Language-Processing.git
+   git clone https://github.com/RamenMachine/Natural-Language-Processing.git
    cd Natural-Language-Processing/ASN4
    ```
 
@@ -274,7 +274,7 @@ Visit the GitHub Pages demo to see:
 - Technology stack
 - Interactive design
 
-**GitHub Pages URL:** `https://yourusername.github.io/Natural-Language-Processing/ASN4/`
+**GitHub Pages URL:** `https://ramenmachine.github.io/Natural-Language-Processing/ASN4/`
 
 ### Screenshots
 
