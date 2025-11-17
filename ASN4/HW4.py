@@ -27,17 +27,17 @@ try:
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score, precision_recall_fscore_support
     import gensim.downloader as api
-    KERAS_AVAILABLE = True
+    kerasReady = True
 except ImportError:
-    KERAS_AVAILABLE = False
-    print("Note: Keras/TensorFlow not available. Q3 will not run.")
+    kerasReady = False
+    print("yo Keras/TensorFlow aint available, Q3 wont run")
 
 
 # ============================================================================
 # QUESTION 1: TF-IDF AND COSINE SIMILARITY (25 points)
 # ============================================================================
 
-class TfidfVectorizer:
+class TfidfMagicBox:
     """
     Custom TF-IDF Vectorizer built from scratch
 
@@ -48,35 +48,35 @@ class TfidfVectorizer:
     """
 
     def __init__(self):
-        self.word_to_index = {}  # Q1.2: word-to-index dictionary
-        self.doc_freq = {}       # Q1.3: document frequency dictionary
-        self.num_docs = 0        # Total number of documents (N)
-        self.vocabulary = set()  # Q1.1: vocabulary set
+        self.wordToSpot = {}      # Q1.2: word-to-index dictionary
+        self.docAppearances = {}  # Q1.3: document frequency dictionary
+        self.totalDocs = 0        # Total number of documents (N)
+        self.vocabStash = set()   # Q1.1: vocabulary set
 
-    def build_vocabulary(self, df: pd.DataFrame):
+    def harvestVocab(self, dataChunk: pd.DataFrame):
         """
         Q1.1: Create a vocabulary set of all words appearing in the tokens column
 
         Args:
-            df: DataFrame with 'tokens' column
+            dataChunk: DataFrame with 'tokens' column
         """
-        self.vocabulary = set()
-        for tokens in df['tokens']:
-            self.vocabulary.update(tokens)
-        print(f"Vocabulary size: {len(self.vocabulary)} words")
+        self.vocabStash = set()
+        for wordList in dataChunk['tokens']:
+            self.vocabStash.update(wordList)
+        print(f"vocab size: {len(self.vocabStash)} words total")
 
-    def create_word_to_index(self):
+    def mapWordsToNumbers(self):
         """
         Q1.2: Create word-to-index dictionary
 
         Assigns unique integer index to each word, incremented by one for each new word.
         """
-        self.word_to_index = {}
-        for idx, word in enumerate(sorted(self.vocabulary), start=1):
-            self.word_to_index[word] = idx
-        print(f"Word-to-index dictionary created with {len(self.word_to_index)} entries")
+        self.wordToSpot = {}
+        for spotNum, word in enumerate(sorted(self.vocabStash), start=1):
+            self.wordToSpot[word] = spotNum
+        print(f"word to index mapping done, {len(self.wordToSpot)} entries")
 
-    def create_doc_frequency(self, df: pd.DataFrame):
+    def countDocOccurrences(self, dataChunk: pd.DataFrame):
         """
         Q1.3: Create document frequency dictionary
 
@@ -84,17 +84,17 @@ class TfidfVectorizer:
         value = number of documents (rows) in which the word occurs
 
         Args:
-            df: DataFrame with 'tokens' column
+            dataChunk: DataFrame with 'tokens' column
         """
-        self.doc_freq = defaultdict(int)
-        for tokens in df['tokens']:
-            unique_words = set(tokens)
-            for word in unique_words:
-                self.doc_freq[word] += 1
-        self.doc_freq = dict(self.doc_freq)
-        print(f"Document frequency dictionary created")
+        self.docAppearances = defaultdict(int)
+        for wordList in dataChunk['tokens']:
+            uniqueOnes = set(wordList)
+            for word in uniqueOnes:
+                self.docAppearances[word] += 1
+        self.docAppearances = dict(self.docAppearances)
+        print(f"doc frequency dict ready to go")
 
-    def term_frequency(self, term: str, document: List[str]) -> float:
+    def termFrequency(self, term: str, document: List[str]) -> float:
         """
         Q1.4: Calculate term frequency
 
@@ -107,8 +107,8 @@ class TfidfVectorizer:
         Returns:
             Term frequency value
         """
-        count = document.count(term)
-        return math.log10(count + 1)
+        howMany = document.count(term)
+        return math.log10(howMany + 1)
 
     def idf(self, word: str) -> float:
         """
@@ -124,8 +124,8 @@ class TfidfVectorizer:
         Returns:
             IDF value
         """
-        df_t = self.doc_freq.get(word, 1)  # Assume df_t = 1 if not found
-        return math.log10(self.num_docs / df_t)
+        docFreqCount = self.docAppearances.get(word, 1)  # Assume df_t = 1 if not found
+        return math.log10(self.totalDocs / docFreqCount)
 
     def tfidf(self, document: List[str]) -> np.ndarray:
         """
@@ -144,73 +144,72 @@ class TfidfVectorizer:
         Returns:
             NumPy array of TF-IDF values
         """
-        vector = np.zeros(len(self.vocabulary))
+        resultVector = np.zeros(len(self.vocabStash))
 
         for word in document:
-            if word in self.word_to_index:
-                # Get the index (subtract 1 since indices start at 1)
-                idx = self.word_to_index[word] - 1
-                tf = self.term_frequency(word, document)
-                idf_val = self.idf(word)
-                vector[idx] = tf * idf_val
+            if word in self.wordToSpot:
+                arraySpot = self.wordToSpot[word] - 1
+                tfScore = self.termFrequency(word, document)
+                idfScore = self.idf(word)
+                resultVector[arraySpot] = tfScore * idfScore
 
-        return vector
+        return resultVector
 
-    def fit(self, df: pd.DataFrame):
+    def learnFromData(self, dataChunk: pd.DataFrame):
         """
         Fit the vectorizer on a DataFrame
 
         Args:
-            df: DataFrame with 'tokens' column
+            dataChunk: DataFrame with 'tokens' column
         """
-        self.num_docs = len(df)
+        self.totalDocs = len(dataChunk)
 
         # Q1.1: Create vocabulary set
-        self.build_vocabulary(df)
+        self.harvestVocab(dataChunk)
 
         # Q1.2: Create word-to-index dictionary
-        self.create_word_to_index()
+        self.mapWordsToNumbers()
 
         # Q1.3: Create document frequency dictionary
-        self.create_doc_frequency(df)
+        self.countDocOccurrences(dataChunk)
 
-        print(f"Fitted on {self.num_docs} documents")
+        print(f"fitted on {self.totalDocs} docs")
 
-    def build_tfidf_matrix(self, df: pd.DataFrame) -> np.ndarray:
+    def constructTfidfMatrix(self, dataChunk: pd.DataFrame) -> np.ndarray:
         """
         Q1.7: Build the TF-IDF matrix for the dataset
 
         Creates an empty NumPy array and appends TF-IDF vectors for all documents.
 
         Args:
-            df: DataFrame with 'tokens' column
+            dataChunk: DataFrame with 'tokens' column
 
         Returns:
             TF-IDF matrix (num_docs x vocab_size)
         """
-        tfidf_matrix = []
+        matrixPile = []
 
-        for tokens in df['tokens']:
-            tfidf_vector = self.tfidf(tokens)
-            tfidf_matrix.append(tfidf_vector)
+        for wordList in dataChunk['tokens']:
+            singleVector = self.tfidf(wordList)
+            matrixPile.append(singleVector)
 
-        return np.array(tfidf_matrix)
+        return np.array(matrixPile)
 
-    def fit_transform(self, df: pd.DataFrame) -> np.ndarray:
+    def learnAndTransform(self, dataChunk: pd.DataFrame) -> np.ndarray:
         """
         Fit and transform in one step
 
         Args:
-            df: DataFrame with 'tokens' column
+            dataChunk: DataFrame with 'tokens' column
 
         Returns:
             TF-IDF matrix
         """
-        self.fit(df)
-        return self.build_tfidf_matrix(df)
+        self.learnFromData(dataChunk)
+        return self.constructTfidfMatrix(dataChunk)
 
 
-def cosine_similarity(v: np.ndarray, w: np.ndarray) -> float:
+def cosineSimilarity(vecA: np.ndarray, vecB: np.ndarray) -> float:
     """
     Q1.8: Calculate cosine similarity between two vectors
 
@@ -218,114 +217,112 @@ def cosine_similarity(v: np.ndarray, w: np.ndarray) -> float:
                = sum(v_i * w_i) / (sqrt(sum(v_i^2)) * sqrt(sum(w_i^2)))
 
     Args:
-        v: First vector
-        w: Second vector
+        vecA: First vector
+        vecB: Second vector
 
     Returns:
         Cosine similarity value between -1 and 1
     """
-    dot_product = np.sum(v * w)
-    norm_v = np.sqrt(np.sum(v ** 2))
-    norm_w = np.sqrt(np.sum(w ** 2))
+    dotProd = np.sum(vecA * vecB)
+    magA = np.sqrt(np.sum(vecA ** 2))
+    magB = np.sqrt(np.sum(vecB ** 2))
 
-    if norm_v == 0 or norm_w == 0:
+    if magA == 0 or magB == 0:
         return 0.0
 
-    return dot_product / (norm_v * norm_w)
+    return dotProd / (magA * magB)
 
 
-def question_one():
+def runQuestionOne():
     """
     Q1: Implement TF-IDF vectorizer and compute cosine similarity
     """
-    print("\n" + "=" * 80)
-    print("QUESTION 1: TF-IDF AND COSINE SIMILARITY")
-    print("=" * 80 + "\n")
+    print("\n" + "=" * 70)
+    print("QUESTION 1: TF IDF AND COSINE SIMILARITY")
+    print("=" * 70 + "\n")
 
     # Q1.1: Load the dataset
-    print("Loading CoNLL2003 dataset...")
-    dataset = load_dataset("eriktks/conll2003", trust_remote_code=True)
+    print("loading CoNLL2003 dataset...")
+    datasetBundle = load_dataset("eriktks/conll2003", trust_remote_code=True)
 
     # Load the dataset in a pandas DataFrame
-    train_data = dataset['train']
+    rawTrainData = datasetBundle['train']
 
     # Convert to DataFrame
-    df = pd.DataFrame({
-        'tokens': train_data['tokens'],
-        'ner_tags': train_data['ner_tags']
+    dataFrame = pd.DataFrame({
+        'tokens': rawTrainData['tokens'],
+        'ner_tags': rawTrainData['ner_tags']
     })
 
     # Drop all columns except tokens and ner_tags (already done by selecting only these)
-    print(f"Dataset loaded into DataFrame with shape: {df.shape}")
-    print(f"Columns: {df.columns.tolist()}")
+    print(f"dataset loaded into DataFrame, shape: {dataFrame.shape}")
+    print(f"columns: {dataFrame.columns.tolist()}")
 
     # Use a subset for efficiency
-    df = df.head(1000)
-    print(f"Using first {len(df)} rows for processing\n")
+    dataFrame = dataFrame.head(1000)
+    print(f"using first {len(dataFrame)} rows\n")
 
     # Initialize and fit TF-IDF vectorizer
-    vectorizer = TfidfVectorizer()
+    magicBox = TfidfMagicBox()
 
     # Fit the vectorizer (creates vocabulary, word-to-index, doc freq)
-    vectorizer.fit(df)
+    magicBox.learnFromData(dataFrame)
 
     # Q1.7: Build TF-IDF matrix
-    print("\nBuilding TF-IDF matrix...")
-    tfidf_matrix = vectorizer.build_tfidf_matrix(df)
-    print(f"TF-IDF Matrix shape: {tfidf_matrix.shape}")
-    print(f"Matrix dimensions: {tfidf_matrix.shape[0]} documents x {tfidf_matrix.shape[1]} features\n")
+    print("\nbuilding tfidf matrix...")
+    bigMatrix = magicBox.constructTfidfMatrix(dataFrame)
+    print(f"tfidf matrix shape: {bigMatrix.shape}")
+    print(f"thats {bigMatrix.shape[0]} docs x {bigMatrix.shape[1]} features\n")
 
     # Q1.8: Cosine similarity examples
-    print("=" * 80)
+    print("=" * 70)
     print("COSINE SIMILARITY ANALYSIS")
-    print("=" * 80 + "\n")
+    print("=" * 70 + "\n")
 
     # Example 1
     print("Example 1:")
-    sent1 = "I love football"
-    sent2 = "I do not love football"
-    tokens1 = sent1.lower().split()
-    tokens2 = sent2.lower().split()
+    sentA = "I love football"
+    sentB = "I do not love football"
+    wordsA = sentA.lower().split()
+    wordsB = sentB.lower().split()
 
-    vec1 = vectorizer.tfidf(tokens1)
-    vec2 = vectorizer.tfidf(tokens2)
-    similarity1 = cosine_similarity(vec1, vec2)
+    vecA = magicBox.tfidf(wordsA)
+    vecB = magicBox.tfidf(wordsB)
+    simScore1 = cosineSimilarity(vecA, vecB)
 
-    print(f"  Sentence 1: '{sent1}'")
-    print(f"  Sentence 2: '{sent2}'")
-    print(f"  Cosine Similarity: {similarity1:.6f}")
-    print(f"\n  Observation: Despite sharing many words ('I', 'love', 'football'),")
-    print(f"  the similarity is affected by the negation word 'not'. The TF-IDF")
-    print(f"  approach captures lexical overlap but may not fully capture semantic")
-    print(f"  opposition caused by negation.\n")
+    print(f"  sentence 1: '{sentA}'")
+    print(f"  sentence 2: '{sentB}'")
+    print(f"  cosine similarity: {simScore1:.6f}")
+    print(f"\n  observation: they share words like 'I', 'love', 'football' but the")
+    print(f"  negation 'not' changes everything. tfidf catches word overlap but")
+    print(f"  misses the semantic flip from negation.\n")
 
     # Example 2
     print("Example 2:")
-    sent3 = "I follow cricket"
-    sent4 = "I follow baseball"
-    tokens3 = sent3.lower().split()
-    tokens4 = sent4.lower().split()
+    sentC = "I follow cricket"
+    sentD = "I follow baseball"
+    wordsC = sentC.lower().split()
+    wordsD = sentD.lower().split()
 
-    vec3 = vectorizer.tfidf(tokens3)
-    vec4 = vectorizer.tfidf(tokens4)
-    similarity2 = cosine_similarity(vec3, vec4)
+    vecC = magicBox.tfidf(wordsC)
+    vecD = magicBox.tfidf(wordsD)
+    simScore2 = cosineSimilarity(vecC, vecD)
 
-    print(f"  Sentence 1: '{sent3}'")
-    print(f"  Sentence 2: '{sent4}'")
-    print(f"  Cosine Similarity: {similarity2:.6f}")
-    print(f"\n  Observation: These sentences share the same structure and two out of")
-    print(f"  three words ('I', 'follow'). The difference lies in 'cricket' vs")
-    print(f"  'baseball', both sports terms. The similarity score reflects the")
-    print(f"  structural and lexical similarity.\n")
+    print(f"  sentence 1: '{sentC}'")
+    print(f"  sentence 2: '{sentD}'")
+    print(f"  cosine similarity: {simScore2:.6f}")
+    print(f"\n  observation: same structure, two out of three words match ('I', 'follow').")
+    print(f"  only diff is cricket vs baseball, both sports. similarity score reflects")
+    print(f"  the structural and lexical similarity pretty well.\n")
 
-    return vectorizer, tfidf_matrix, df
+    return magicBox, bigMatrix, dataFrame
 
 
 # ============================================================================
 # QUESTION 2: PPMI (POSITIVE POINTWISE MUTUAL INFORMATION) (5 points)
 # ============================================================================
 
-def calculate_ppmi(words: List[str]) -> Dict[Tuple[str, str], float]:
+def calculatePpmi(wordSequence: List[str]) -> Dict[Tuple[str, str], float]:
     """
     Q2: Calculate Positive Pointwise Mutual Information for word pairs
 
@@ -338,84 +335,84 @@ def calculate_ppmi(words: List[str]) -> Dict[Tuple[str, str], float]:
     - p(x, y) = probability of x and y occurring together (adjacent)
 
     Args:
-        words: List of strings representing the words in the text
+        wordSequence: List of strings representing the words in the text
 
     Returns:
         Dictionary mapping tuples of words to their PPMI values
     """
     # Count individual word occurrences
-    word_counts = Counter(words)
-    total_words = len(words)
+    wordTally = Counter(wordSequence)
+    totalWordCount = len(wordSequence)
 
     # Count adjacent word pairs (co-occurrences)
-    pair_counts = Counter()
-    for i in range(len(words) - 1):
-        pair = (words[i], words[i + 1])
-        pair_counts[pair] += 1
+    pairTally = Counter()
+    for idx in range(len(wordSequence) - 1):
+        wordPair = (wordSequence[idx], wordSequence[idx + 1])
+        pairTally[wordPair] += 1
 
-    total_pairs = sum(pair_counts.values())
+    totalPairCount = sum(pairTally.values())
 
     # Calculate PPMI for each pair
-    ppmi_dict = {}
+    ppmiResults = {}
 
-    for (word_x, word_y), pair_count in pair_counts.items():
+    for (wordX, wordY), pairCount in pairTally.items():
         # Calculate probabilities
-        p_x = word_counts[word_x] / total_words
-        p_y = word_counts[word_y] / total_words
-        p_xy = pair_count / total_pairs
+        probX = wordTally[wordX] / totalWordCount
+        probY = wordTally[wordY] / totalWordCount
+        probXY = pairCount / totalPairCount
 
         # Calculate PMI
-        if p_x > 0 and p_y > 0 and p_xy > 0:
-            pmi = math.log2(p_xy / (p_x * p_y))
+        if probX > 0 and probY > 0 and probXY > 0:
+            pmiValue = math.log2(probXY / (probX * probY))
             # PPMI = max(PMI, 0)
-            ppmi = max(pmi, 0)
-            ppmi_dict[(word_x, word_y)] = ppmi
+            ppmiValue = max(pmiValue, 0)
+            ppmiResults[(wordX, wordY)] = ppmiValue
 
-    return ppmi_dict
+    return ppmiResults
 
 
-def question_two():
+def runQuestionTwo():
     """
     Q2: Demonstrate PPMI calculation with examples
     """
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 70)
     print("QUESTION 2: PPMI CALCULATION")
-    print("=" * 80 + "\n")
+    print("=" * 70 + "\n")
 
     # Example from assignment specification
-    example_words = ['a', 'b', 'a', 'c']
-    ppmi_result = calculate_ppmi(example_words)
+    sampleWords = ['a', 'b', 'a', 'c']
+    ppmiOutput = calculatePpmi(sampleWords)
 
-    print("Example: words = ['a', 'b', 'a', 'c']")
-    print("\nPPMI Results:")
-    print("-" * 40)
-    for pair, ppmi_value in sorted(ppmi_result.items()):
-        print(f"  {pair}: {ppmi_value:.6f}")
-    print("-" * 40)
+    print("example: words = ['a', 'b', 'a', 'c']")
+    print("\nppmi results:")
+    print("=" * 40)
+    for wordPair, ppmiVal in sorted(ppmiOutput.items()):
+        print(f"  {wordPair}: {ppmiVal:.6f}")
+    print("=" * 40)
 
     # Demonstrate with additional example
-    print("\n" + "=" * 80)
-    print("Additional Example for Demonstration:")
-    print("=" * 80 + "\n")
+    print("\n" + "=" * 70)
+    print("BONUS EXAMPLE FOR FUN:")
+    print("=" * 70 + "\n")
 
-    text_example = "the cat sat on the mat the dog sat on the log".split()
-    ppmi_result2 = calculate_ppmi(text_example)
+    bonusText = "the cat sat on the mat the dog sat on the log".split()
+    ppmiOutput2 = calculatePpmi(bonusText)
 
-    print(f"Text: '{' '.join(text_example)}'")
-    print("\nPPMI Results (sorted by PPMI value):")
-    print("-" * 50)
-    for pair, ppmi_value in sorted(ppmi_result2.items(), key=lambda x: x[1], reverse=True):
-        print(f"  {pair[0]:8s} -> {pair[1]:8s} : {ppmi_value:.6f}")
-    print("-" * 50)
+    print(f"text: '{' '.join(bonusText)}'")
+    print("\nppmi results (sorted by value):")
+    print("=" * 50)
+    for wordPair, ppmiVal in sorted(ppmiOutput2.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {wordPair[0]:8s} -> {wordPair[1]:8s} : {ppmiVal:.6f}")
+    print("=" * 50)
 
-    return ppmi_result, ppmi_result2
+    return ppmiOutput, ppmiOutput2
 
 
 # ============================================================================
 # QUESTION 3: NAMED ENTITY RECOGNITION USING LSTM (20 points)
 # ============================================================================
 
-class NerLstmModel:
+class NerBrainModel:
     """
     Named Entity Recognition model using LSTM
 
@@ -426,24 +423,24 @@ class NerLstmModel:
     - 1 final fully-connected layer with softmax activation and 9 outputs
     """
 
-    def __init__(self, vocab_size: int, embedding_dim: int = 300,
-                 max_length: int = 100, num_tags: int = 9):
+    def __init__(self, vocabCount: int, embeddingSize: int = 300,
+                 maxSeqLen: int = 100, tagCount: int = 9):
         """
         Initialize NER model
 
         Args:
-            vocab_size: Size of vocabulary
-            embedding_dim: Dimension of word embeddings (300 for Word2Vec)
-            max_length: Maximum sequence length
-            num_tags: Number of NER tags (9 for CoNLL2003)
+            vocabCount: Size of vocabulary
+            embeddingSize: Dimension of word embeddings (300 for Word2Vec)
+            maxSeqLen: Maximum sequence length
+            tagCount: Number of NER tags (9 for CoNLL2003)
         """
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
-        self.max_length = max_length
-        self.num_tags = num_tags
-        self.model = None
+        self.vocabCount = vocabCount
+        self.embeddingSize = embeddingSize
+        self.maxSeqLen = maxSeqLen
+        self.tagCount = tagCount
+        self.neuralNet = None
 
-    def build_model(self, embedding_matrix=None):
+    def assembleModel(self, embeddingWeights=None):
         """
         Q3.2: Build the LSTM model architecture
 
@@ -454,214 +451,214 @@ class NerLstmModel:
         - 1 final fully-connected layer with softmax activation and 9 outputs
 
         Args:
-            embedding_matrix: Pre-trained embedding matrix from Word2Vec
+            embeddingWeights: Pre-trained embedding matrix from Word2Vec
         """
-        model = Sequential()
+        brainModel = Sequential()
 
         # Embedding layer
-        if embedding_matrix is not None:
-            model.add(Embedding(
-                input_dim=self.vocab_size,
-                output_dim=self.embedding_dim,
-                weights=[embedding_matrix],
-                input_length=self.max_length,
+        if embeddingWeights is not None:
+            brainModel.add(Embedding(
+                input_dim=self.vocabCount,
+                output_dim=self.embeddingSize,
+                weights=[embeddingWeights],
+                input_length=self.maxSeqLen,
                 trainable=False,  # Use pre-trained embeddings
                 mask_zero=True
             ))
         else:
-            model.add(Embedding(
-                input_dim=self.vocab_size,
-                output_dim=self.embedding_dim,
-                input_length=self.max_length,
+            brainModel.add(Embedding(
+                input_dim=self.vocabCount,
+                output_dim=self.embeddingSize,
+                input_length=self.maxSeqLen,
                 mask_zero=True
             ))
 
         # 3 LSTM layers
-        model.add(LSTM(128, return_sequences=True, dropout=0.2))
-        model.add(LSTM(64, return_sequences=True, dropout=0.2))
-        model.add(LSTM(32, return_sequences=True, dropout=0.2))
+        brainModel.add(LSTM(128, return_sequences=True, dropout=0.2))
+        brainModel.add(LSTM(64, return_sequences=True, dropout=0.2))
+        brainModel.add(LSTM(32, return_sequences=True, dropout=0.2))
 
         # 1 fully-connected (dense) layer
-        model.add(Dense(64, activation='relu'))
-        model.add(Dropout(0.3))
+        brainModel.add(Dense(64, activation='relu'))
+        brainModel.add(Dropout(0.3))
 
         # Final fully-connected layer with softmax activation and 9 outputs
-        model.add(Dense(self.num_tags, activation='softmax'))
+        brainModel.add(Dense(self.tagCount, activation='softmax'))
 
         # Q3.3: Compile with cross entropy loss and Adam optimizer
-        model.compile(
+        brainModel.compile(
             loss='categorical_crossentropy',  # Cross entropy loss
             optimizer='adam',                  # Adam optimizer (recommended)
             metrics=['accuracy']
         )
 
-        self.model = model
-        return model
+        self.neuralNet = brainModel
+        return brainModel
 
-    def summary(self):
+    def showArchitecture(self):
         """Print model summary"""
-        if self.model:
-            self.model.summary()
+        if self.neuralNet:
+            self.neuralNet.summary()
 
 
-def prepare_ner_data(dataset):
+def prepNerDataFrame(datasetObj):
     """
     Prepare CoNLL2003 data for NER training
 
     Args:
-        dataset: CoNLL2003 dataset
+        datasetObj: CoNLL2003 dataset
 
     Returns:
         DataFrame with 'tokens' and 'ner_tags' columns
     """
-    train_data = dataset['train']
+    rawTrainChunk = datasetObj['train']
 
     # Create DataFrame with only tokens and ner_tags
-    df = pd.DataFrame({
-        'tokens': [[token.lower() for token in tokens] for tokens in train_data['tokens']],
-        'ner_tags': train_data['ner_tags']
+    cleanFrame = pd.DataFrame({
+        'tokens': [[word.lower() for word in wordList] for wordList in rawTrainChunk['tokens']],
+        'ner_tags': rawTrainChunk['ner_tags']
     })
 
-    return df
+    return cleanFrame
 
 
-def create_embedding_matrix(word_to_idx: Dict, word2vec_model, embedding_dim: int = 300) -> np.ndarray:
+def buildEmbeddingWeights(wordMapping: Dict, word2vecEngine, vectorSize: int = 300) -> np.ndarray:
     """
     Create embedding matrix from Word2Vec model
 
     Args:
-        word_to_idx: Word to index mapping
-        word2vec_model: Loaded Word2Vec model (Google News corpus)
-        embedding_dim: Embedding dimension (300)
+        wordMapping: Word to index mapping
+        word2vecEngine: Loaded Word2Vec model (Google News corpus)
+        vectorSize: Embedding dimension (300)
 
     Returns:
         Embedding matrix
     """
-    vocab_size = len(word_to_idx)
-    embedding_matrix = np.zeros((vocab_size, embedding_dim))
+    totalVocab = len(wordMapping)
+    weightMatrix = np.zeros((totalVocab, vectorSize))
 
-    found = 0
-    for word, idx in word_to_idx.items():
-        if word in word2vec_model:
-            embedding_matrix[idx] = word2vec_model[word]
-            found += 1
+    foundCount = 0
+    for word, spotNum in wordMapping.items():
+        if word in word2vecEngine:
+            weightMatrix[spotNum] = word2vecEngine[word]
+            foundCount += 1
         else:
             # Random initialization for words not in Word2Vec
-            embedding_matrix[idx] = np.random.normal(0, 0.1, embedding_dim)
+            weightMatrix[spotNum] = np.random.normal(0, 0.1, vectorSize)
 
-    print(f"Found {found}/{vocab_size} words in Word2Vec model ({100*found/vocab_size:.2f}%)")
-    return embedding_matrix
+    print(f"found {foundCount}/{totalVocab} words in word2vec ({100*foundCount/totalVocab:.2f}%)")
+    return weightMatrix
 
 
-def question_three():
+def runQuestionThree():
     """
     Q3: Implement Named Entity Recognition using LSTM
     """
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 70)
     print("QUESTION 3: NAMED ENTITY RECOGNITION USING LSTM")
-    print("=" * 80 + "\n")
+    print("=" * 70 + "\n")
 
-    if not KERAS_AVAILABLE:
-        print("ERROR: Keras/TensorFlow not available. Please install required packages.")
+    if not kerasReady:
+        print("ERROR: keras/tensorflow not available, install the packages first")
         return None
 
     # Load dataset
-    print("Loading CoNLL2003 dataset...")
-    dataset = load_dataset("eriktks/conll2003", trust_remote_code=True)
+    print("loading CoNLL2003 dataset...")
+    datasetBundle = load_dataset("eriktks/conll2003", trust_remote_code=True)
 
     # Prepare data
-    print("Preparing data...")
-    df = prepare_ner_data(dataset)
-    print(f"Total samples: {len(df)}")
+    print("prepping the data...")
+    cleanFrame = prepNerDataFrame(datasetBundle)
+    print(f"total samples: {len(cleanFrame)}")
 
     # Use subset for efficiency
-    df = df.head(5000)
-    print(f"Using {len(df)} samples for training\n")
+    cleanFrame = cleanFrame.head(5000)
+    print(f"using {len(cleanFrame)} samples\n")
 
     # Build vocabulary
-    all_words = set()
-    for tokens in df['tokens']:
-        all_words.update(tokens)
+    allUniqueWords = set()
+    for wordList in cleanFrame['tokens']:
+        allUniqueWords.update(wordList)
 
-    word_to_idx = {'<PAD>': 0, '<UNK>': 1}
-    for idx, word in enumerate(sorted(all_words), start=2):
-        word_to_idx[word] = idx
+    wordToSpot = {'<PAD>': 0, '<UNK>': 1}
+    for spotNum, word in enumerate(sorted(allUniqueWords), start=2):
+        wordToSpot[word] = spotNum
 
-    idx_to_word = {v: k for k, v in word_to_idx.items()}
+    spotToWord = {v: k for k, v in wordToSpot.items()}
 
-    print(f"Vocabulary size: {len(word_to_idx)}")
+    print(f"vocab size: {len(wordToSpot)}")
 
     # Tag mapping (9 NER tags: 0-8)
-    tag_to_idx = {i: i for i in range(9)}
-    idx_to_tag = {v: k for k, v in tag_to_idx.items()}
+    tagToSpot = {i: i for i in range(9)}
+    spotToTag = {v: k for k, v in tagToSpot.items()}
 
-    print(f"Number of NER tags: {len(tag_to_idx)}")
+    print(f"ner tag count: {len(tagToSpot)}")
 
     # Determine max length
-    max_length = max(len(tokens) for tokens in df['tokens'])
-    max_length = min(max_length, 100)
-    print(f"Maximum sequence length: {max_length}\n")
+    longestSeq = max(len(wordList) for wordList in cleanFrame['tokens'])
+    longestSeq = min(longestSeq, 100)
+    print(f"max sequence length: {longestSeq}\n")
 
     # Convert sentences to sequences
-    X_sequences = []
-    y_sequences = []
+    inputSeqs = []
+    outputSeqs = []
 
-    for tokens, tags in zip(df['tokens'], df['ner_tags']):
+    for wordList, tagList in zip(cleanFrame['tokens'], cleanFrame['ner_tags']):
         # Convert words to indices
-        sent_indices = [word_to_idx.get(word, word_to_idx['<UNK>']) for word in tokens]
-        X_sequences.append(sent_indices)
-        y_sequences.append(tags)
+        numericSeq = [wordToSpot.get(word, wordToSpot['<UNK>']) for word in wordList]
+        inputSeqs.append(numericSeq)
+        outputSeqs.append(tagList)
 
     # Pad sequences
-    X_padded = pad_sequences(X_sequences, maxlen=max_length, padding='post', value=word_to_idx['<PAD>'])
-    y_padded = pad_sequences(y_sequences, maxlen=max_length, padding='post', value=0)
+    paddedInputs = pad_sequences(inputSeqs, maxlen=longestSeq, padding='post', value=wordToSpot['<PAD>'])
+    paddedOutputs = pad_sequences(outputSeqs, maxlen=longestSeq, padding='post', value=0)
 
     # Convert tags to categorical (one-hot encoding)
-    y_categorical = np.array([to_categorical(seq, num_classes=9) for seq in y_padded])
+    categoricalOutputs = np.array([to_categorical(seq, num_classes=9) for seq in paddedOutputs])
 
     # Q3.1: Split data 80/20 using sklearn
-    print("Splitting data (80% train, 20% test)...")
-    X_train, X_test, y_train, y_test = train_test_split(
-        X_padded, y_categorical, test_size=0.2, random_state=42
+    print("splitting data (80% train, 20% test)...")
+    trainX, testX, trainY, testY = train_test_split(
+        paddedInputs, categoricalOutputs, test_size=0.2, random_state=42
     )
 
-    print(f"Training samples: {len(X_train)} (80%)")
-    print(f"Testing samples: {len(X_test)} (20%)\n")
+    print(f"training samples: {len(trainX)} (80%)")
+    print(f"testing samples: {len(testX)} (20%)\n")
 
     # Q3.1: Load Word2Vec embeddings from Google News corpus
-    print("Loading Word2Vec embeddings (Google News corpus)...")
-    print("This may take a while on first run...\n")
+    print("loading word2vec embeddings (google news corpus)...")
+    print("this might take a bit on first run...\n")
 
     try:
         # Load pre-trained Word2Vec model
-        word2vec_model = api.load("word2vec-google-news-300")
-        print("Word2Vec model loaded successfully!\n")
+        word2vecEngine = api.load("word2vec-google-news-300")
+        print("word2vec loaded successfully!\n")
 
         # Create embedding matrix
-        embedding_matrix = create_embedding_matrix(word_to_idx, word2vec_model)
-    except Exception as e:
-        print(f"Warning: Could not load Word2Vec: {e}")
-        print("Using random embeddings instead.\n")
-        embedding_matrix = None
+        embeddingWeights = buildEmbeddingWeights(wordToSpot, word2vecEngine)
+    except Exception as err:
+        print(f"warning: couldnt load word2vec: {err}")
+        print("using random embeddings instead\n")
+        embeddingWeights = None
 
     # Q3.2: Build LSTM model
-    print("Building LSTM model...")
-    ner_model = NerLstmModel(
-        vocab_size=len(word_to_idx),
-        embedding_dim=300,
-        max_length=max_length,
-        num_tags=9
+    print("building lstm model...")
+    nerBrain = NerBrainModel(
+        vocabCount=len(wordToSpot),
+        embeddingSize=300,
+        maxSeqLen=longestSeq,
+        tagCount=9
     )
-    ner_model.build_model(embedding_matrix)
-    ner_model.summary()
+    nerBrain.assembleModel(embeddingWeights)
+    nerBrain.showArchitecture()
 
     # Q3.3: Train model with cross entropy loss, Adam optimizer, 10 epochs
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 70)
     print("TRAINING MODEL (10 epochs)")
-    print("=" * 80 + "\n")
+    print("=" * 70 + "\n")
 
-    history = ner_model.model.fit(
-        X_train, y_train,
+    trainingLog = nerBrain.neuralNet.fit(
+        trainX, trainY,
         validation_split=0.1,
         epochs=10,
         batch_size=32,
@@ -669,44 +666,44 @@ def question_three():
     )
 
     # Q3.4: Evaluate model on test set
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 70)
     print("MODEL EVALUATION")
-    print("=" * 80 + "\n")
+    print("=" * 70 + "\n")
 
-    print("Evaluating model on test set...")
-    y_pred = ner_model.model.predict(X_test)
-    y_pred_classes = np.argmax(y_pred, axis=-1)
-    y_test_classes = np.argmax(y_test, axis=-1)
+    print("evaluating model on test set...")
+    predictedProbs = nerBrain.neuralNet.predict(testX)
+    predictedClasses = np.argmax(predictedProbs, axis=-1)
+    actualClasses = np.argmax(testY, axis=-1)
 
     # Flatten predictions and true labels
-    y_pred_flat = []
-    y_test_flat = []
+    flatPredictions = []
+    flatActuals = []
 
-    for i in range(len(y_test_classes)):
-        for j in range(len(y_test_classes[i])):
-            y_pred_flat.append(y_pred_classes[i][j])
-            y_test_flat.append(y_test_classes[i][j])
+    for idx in range(len(actualClasses)):
+        for pos in range(len(actualClasses[idx])):
+            flatPredictions.append(predictedClasses[idx][pos])
+            flatActuals.append(actualClasses[idx][pos])
 
     # Q3.4: Calculate metrics
-    accuracy = accuracy_score(y_test_flat, y_pred_flat)
-    precision, recall, f1, _ = precision_recall_fscore_support(
-        y_test_flat, y_pred_flat, average='macro', zero_division=0
+    accScore = accuracy_score(flatActuals, flatPredictions)
+    precScore, recScore, f1Score, _ = precision_recall_fscore_support(
+        flatActuals, flatPredictions, average='macro', zero_division=0
     )
 
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 70)
     print("EVALUATION RESULTS")
-    print("=" * 80)
-    print(f"  Accuracy:               {accuracy:.6f}")
-    print(f"  Macro-average Precision: {precision:.6f}")
-    print(f"  Macro-average Recall:    {recall:.6f}")
-    print(f"  Macro-average F1 Score:  {f1:.6f}")
-    print("=" * 80 + "\n")
+    print("=" * 70)
+    print(f"  accuracy:               {accScore:.6f}")
+    print(f"  macro avg precision:    {precScore:.6f}")
+    print(f"  macro avg recall:       {recScore:.6f}")
+    print(f"  macro avg f1 score:     {f1Score:.6f}")
+    print("=" * 70 + "\n")
 
-    return ner_model, history, {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-        'f1': f1
+    return nerBrain, trainingLog, {
+        'accuracy': accScore,
+        'precision': precScore,
+        'recall': recScore,
+        'f1': f1Score
     }
 
 
@@ -714,63 +711,63 @@ def question_three():
 # MAIN EXECUTION
 # ============================================================================
 
-def main():
+def runEverything():
     """
     Main function to run all assignment questions
     """
     print("\n")
-    print("*" * 80)
-    print("*" + " " * 78 + "*")
-    print("*" + " " * 20 + "CS 421: NLP - ASSIGNMENT 4" + " " * 32 + "*")
-    print("*" + " " * 78 + "*")
-    print("*" * 80)
+    print("*" * 70)
+    print("*" + " " * 68 + "*")
+    print("*" + " " * 17 + "CS 421: NLP ASSIGNMENT 4" + " " * 27 + "*")
+    print("*" + " " * 68 + "*")
+    print("*" * 70)
 
-    results = {}
+    outputStash = {}
 
     # Question 1: TF-IDF and Cosine Similarity (25 points)
-    print("\n[Running Question 1: TF-IDF and Cosine Similarity]")
+    print("\n[running question 1: tfidf and cosine similarity]")
     try:
-        vectorizer, tfidf_matrix, df = question_one()
-        results['q1'] = {
-            'vectorizer': vectorizer,
-            'matrix': tfidf_matrix,
-            'dataframe': df
+        magicBox, bigMatrix, dataFrame = runQuestionOne()
+        outputStash['q1'] = {
+            'vectorizer': magicBox,
+            'matrix': bigMatrix,
+            'dataframe': dataFrame
         }
-    except Exception as e:
-        print(f"\nError in Q1: {e}")
+    except Exception as err:
+        print(f"\nerror in Q1: {err}")
         import traceback
         traceback.print_exc()
 
     # Question 2: PPMI (5 points)
-    print("\n[Running Question 2: PPMI Calculation]")
+    print("\n[running question 2: ppmi calculation]")
     try:
-        ppmi1, ppmi2 = question_two()
-        results['q2'] = {'ppmi_example1': ppmi1, 'ppmi_example2': ppmi2}
-    except Exception as e:
-        print(f"\nError in Q2: {e}")
+        ppmi1, ppmi2 = runQuestionTwo()
+        outputStash['q2'] = {'ppmiExample1': ppmi1, 'ppmiExample2': ppmi2}
+    except Exception as err:
+        print(f"\nerror in Q2: {err}")
         import traceback
         traceback.print_exc()
 
     # Question 3: NER with LSTM (20 points)
-    print("\n[Running Question 3: Named Entity Recognition using LSTM]")
+    print("\n[running question 3: ner using lstm]")
     try:
-        model, history, metrics = question_three()
-        results['q3'] = {
-            'model': model,
-            'history': history,
-            'metrics': metrics
+        nerBrain, trainingLog, metricsDict = runQuestionThree()
+        outputStash['q3'] = {
+            'model': nerBrain,
+            'history': trainingLog,
+            'metrics': metricsDict
         }
-    except Exception as e:
-        print(f"\nError in Q3: {e}")
+    except Exception as err:
+        print(f"\nerror in Q3: {err}")
         import traceback
         traceback.print_exc()
 
-    print("\n" + "*" * 80)
-    print("*" + " " * 25 + "ASSIGNMENT COMPLETE!" + " " * 33 + "*")
-    print("*" * 80 + "\n")
+    print("\n" + "*" * 70)
+    print("*" + " " * 22 + "ASSIGNMENT COMPLETE!" + " " * 26 + "*")
+    print("*" * 70 + "\n")
 
-    return results
+    return outputStash
 
 
 if __name__ == "__main__":
-    results = main()
+    outputStash = runEverything()
