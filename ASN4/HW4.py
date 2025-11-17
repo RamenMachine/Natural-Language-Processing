@@ -94,7 +94,7 @@ class TfidfMagicBox:
         self.docAppearances = dict(self.docAppearances)
         print(f"doc frequency dict ready to go")
 
-    def termFrequency(self, term: str, document: List[str]) -> float:
+    def term_frequency(self, term: str, document: List[str]) -> float:
         """
         Q1.4: Calculate term frequency
 
@@ -149,7 +149,7 @@ class TfidfMagicBox:
         for word in document:
             if word in self.wordToSpot:
                 arraySpot = self.wordToSpot[word] - 1
-                tfScore = self.termFrequency(word, document)
+                tfScore = self.term_frequency(word, document)
                 idfScore = self.idf(word)
                 resultVector[arraySpot] = tfScore * idfScore
 
@@ -322,7 +322,7 @@ def runQuestionOne():
 # QUESTION 2: PPMI (POSITIVE POINTWISE MUTUAL INFORMATION) (5 points)
 # ============================================================================
 
-def calculatePpmi(wordSequence: List[str]) -> Dict[Tuple[str, str], float]:
+def calculate_ppmi(wordSequence: List[str]) -> Dict[Tuple[str, str], float]:
     """
     Q2: Calculate Positive Pointwise Mutual Information for word pairs
 
@@ -381,7 +381,7 @@ def runQuestionTwo():
 
     # Example from assignment specification
     sampleWords = ['a', 'b', 'a', 'c']
-    ppmiOutput = calculatePpmi(sampleWords)
+    ppmiOutput = calculate_ppmi(sampleWords)
 
     print("example: words = ['a', 'b', 'a', 'c']")
     print("\nppmi results:")
@@ -396,7 +396,7 @@ def runQuestionTwo():
     print("=" * 70 + "\n")
 
     bonusText = "the cat sat on the mat the dog sat on the log".split()
-    ppmiOutput2 = calculatePpmi(bonusText)
+    ppmiOutput2 = calculate_ppmi(bonusText)
 
     print(f"text: '{' '.join(bonusText)}'")
     print("\nppmi results (sorted by value):")
