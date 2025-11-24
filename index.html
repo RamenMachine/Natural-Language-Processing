@@ -2,52 +2,656 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=ASN4/index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to NLP Portfolio...</title>
+    <title>NLP Portfolio | Natural Language Processing Projects</title>
+
+    <!-- MathJax for LaTeX formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --red-glow: #ff3366;
+            --purple-glow: #9333ea;
+            --green-glow: #10b981;
+        }
+
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: #0a0a0f;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #0a0a0f;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--red-glow), transparent);
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--purple-glow), transparent);
+            top: 50%;
+            right: -150px;
+            animation-delay: 4s;
+        }
+
+        .blob-3 {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, var(--green-glow), transparent);
+            bottom: -100px;
+            left: 30%;
+            animation-delay: 8s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, 50px) scale(1.1); }
+            50% { transform: translate(-30px, 80px) scale(0.9); }
+            75% { transform: translate(70px, -40px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #ff3366 50%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            gap: 8px;
+            margin: 40px auto;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .loader {
+
+        .tab-btn {
+            padding: 16px 32px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff3366, #9333ea);
+            color: white;
+            box-shadow: 0 8px 24px rgba(255, 51, 102, 0.4);
+        }
+
+        .tab-btn .badge-new {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--green-glow);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(34px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 40px;
+            margin: 24px 0;
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 16px 48px rgba(255, 51, 102, 0.2);
+        }
+
+        /* Section Headers */
+        .section-header {
             text-align: center;
+            margin-bottom: 48px;
         }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #ff3366 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .section-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            font-weight: 300;
         }
-        a {
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.2), rgba(147, 51, 234, 0.2));
+            backdrop-filter: blur(20px);
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .metric-card h4 {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .metric-card .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #ff3366 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        .feature-card p, .feature-card li {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .feature-card li {
+            padding: 6px 0;
+        }
+
+        .feature-card li strong {
+            color: #ff3366;
+        }
+
+        /* Code Snippet */
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.5);
+            color: #e2e8f0;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            margin: 16px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Formula */
+        .formula {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin: 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula strong {
+            color: #ff3366;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff3366, #9333ea);
             color: white;
-            text-decoration: underline;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(255, 51, 102, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 51, 102, 0.2);
+            border-color: rgba(255, 51, 102, 0.5);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 48px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 80px;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 8px 0;
+        }
+
+        .footer a {
+            color: #ff3366;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .tab-nav { flex-direction: column; gap: 4px; }
+            .tab-btn { width: 100%; }
+            .container { padding: 0 20px; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff3366, #9333ea);
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <div class="spinner"></div>
-        <h2>Redirecting to NLP Portfolio...</h2>
-        <p>If you are not redirected automatically, <a href="ASN4/index.html">click here</a>.</p>
+    <!-- Background -->
+    <div class="background-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
 
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>NLP Portfolio</h1>
+            <p class="subtitle">Natural Language Processing & Machine Learning Projects</p>
+        </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <div class="container">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="showTab('parsing')">
+                Parsing
+                <span class="badge-new">NEW</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('ner')">NER & Deep Learning</button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="container">
+
+        <!-- Parsing Tab (ASN5) -->
+        <div id="parsing" class="tab-content active">
+            <div class="section-header">
+                <h2>Constituency & Dependency Parsing</h2>
+                <p>Implementing parsing algorithms from scratch including CKY and Stanford CoreNLP integration</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Grammar Rules</h4>
+                    <div class="value">13.5K</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">CNF Productions</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Algorithm</h4>
+                    <div class="value">CKY</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Dynamic Programming</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Parse Trees</h4>
+                    <div class="value">10+</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Ambiguous Parses</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Dependencies</h4>
+                    <div class="value">CoNLL</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Format Output</p>
+                </div>
+            </div>
+
+            <div class="cards-grid">
+                <div class="glass-card feature-card">
+                    <h3>Constituency Tree Visualization</h3>
+                    <p>Built constituency parse trees using production rules:</p>
+                    <div class="code-snippet">
+S -> VP
+VP -> NP V PP
+NP -> DET N | N
+PP -> P NP
+
+Example: "Cat sat on the mat"
+                    </div>
+                    <ul>
+                        <li><strong>Production Rules:</strong> 6 grammar rules</li>
+                        <li><strong>Visualization:</strong> NLTK tree.draw()</li>
+                        <li><strong>Output:</strong> Pretty-printed parse tree</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>CKY Parsing Algorithm</h3>
+                    <p>Implemented the Cocke-Kasami-Younger algorithm:</p>
+                    <ul>
+                        <li><strong>Grammar:</strong> ATIS CFG (5,517 productions)</li>
+                        <li><strong>CNF Conversion:</strong> Chomsky Normal Form</li>
+                        <li><strong>Back-pointers:</strong> Tree reconstruction</li>
+                        <li><strong>Multiple parses:</strong> Handles ambiguity</li>
+                    </ul>
+                    <div class="formula">
+                        <strong>Complexity</strong>
+                        $$O(n^3 \cdot |G|)$$
+                        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">where n = sentence length, |G| = grammar size</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>Dependency Parsing</h3>
+                    <p>Stanford CoreNLP integration for dependency analysis:</p>
+                    <ul>
+                        <li><strong>Server:</strong> CoreNLP on port 9000</li>
+                        <li><strong>Output:</strong> CoNLL format</li>
+                        <li><strong>Columns:</strong> word, POS, head, relation</li>
+                    </ul>
+                    <div class="code-snippet">
+Word        POS    Head   Relation
+The         DT     2      det
+cat         NN     3      nsubj
+sat         VBD    0      ROOT
+on          IN     6      case
+the         DT     6      det
+mat         NN     3      nmod
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>Ambiguity Analysis</h3>
+                    <p>Analyzed structurally ambiguous sentences:</p>
+                    <ul>
+                        <li><strong>"Flying planes can be dangerous"</strong></li>
+                        <li>Gerund vs participial adjective</li>
+                        <li><strong>"Amid the chaos I saw her duck"</strong></li>
+                        <li>Noun (bird) vs verb (ducking)</li>
+                        <li><strong>Parser limitations:</strong> Single interpretation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN5/assignment5.py" class="btn btn-primary" target="_blank">View Source Code</a>
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN5" class="btn btn-secondary" target="_blank">Project Folder</a>
+            </div>
+        </div>
+
+        <!-- NER Tab (ASN4) -->
+        <div id="ner" class="tab-content">
+            <div class="section-header">
+                <h2>Named Entity Recognition with LSTM</h2>
+                <p>Deep learning for sequence labeling using TF-IDF, PPMI, and neural networks</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Accuracy</h4>
+                    <div class="value">94.2%</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Token Classification</p>
+                </div>
+                <div class="metric-card">
+                    <h4>F1-Score</h4>
+                    <div class="value">86.6%</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Macro-averaged</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Vocabulary</h4>
+                    <div class="value">5,847</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Unique Tokens</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Embeddings</h4>
+                    <div class="value">300D</div>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Word2Vec</p>
+                </div>
+            </div>
+
+            <div class="cards-grid">
+                <div class="glass-card feature-card">
+                    <h3>TF-IDF Vectorization</h3>
+                    <p>Custom implementation from scratch:</p>
+                    <div class="formula">
+                        <strong>TF-IDF Weight</strong>
+                        $$\text{TF-IDF}(t, d) = \log_{10}(\text{count} + 1) \times \log_{10}\left(\frac{N}{df_t}\right)$$
+                    </div>
+                    <ul>
+                        <li><strong>Documents:</strong> 1,000 samples</li>
+                        <li><strong>Cosine Similarity:</strong> Semantic matching</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>PPMI Analysis</h3>
+                    <p>Positive Pointwise Mutual Information:</p>
+                    <div class="formula">
+                        <strong>PPMI Formula</strong>
+                        $$\text{PPMI}(x, y) = \max\left(\log_2\frac{p(x,y)}{p(x) \cdot p(y)}, 0\right)$$
+                    </div>
+                    <ul>
+                        <li><strong>Word associations:</strong> Collocation detection</li>
+                        <li><strong>Co-occurrence:</strong> Context windows</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>LSTM Architecture</h3>
+                    <div class="code-snippet">
+Input (100 tokens)
+  -> Embedding (300D Word2Vec)
+  -> LSTM(128, dropout=0.2)
+  -> LSTM(64, dropout=0.2)
+  -> LSTM(32, dropout=0.2)
+  -> Dense(64, ReLU)
+  -> Softmax(9 classes)
+                    </div>
+                    <ul>
+                        <li><strong>Dataset:</strong> CoNLL2003</li>
+                        <li><strong>Tags:</strong> BIO scheme (9 classes)</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card feature-card">
+                    <h3>Entity Types</h3>
+                    <p>BIO tagging for 4 entity categories:</p>
+                    <ul>
+                        <li><strong>PER:</strong> Person names</li>
+                        <li><strong>ORG:</strong> Organizations</li>
+                        <li><strong>LOC:</strong> Locations</li>
+                        <li><strong>MISC:</strong> Miscellaneous entities</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN4/HW4.py" class="btn btn-primary" target="_blank">View Source Code</a>
+                <a href="ASN4/index.html" class="btn btn-secondary">Full Project Page</a>
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN4/assignment4_showcase.ipynb" class="btn btn-secondary" target="_blank">Jupyter Notebook</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Natural Language Processing Portfolio</p>
+            <p style="margin-top: 16px;">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing" target="_blank">GitHub Repository</a>
+            </p>
+        </div>
+    </footer>
+
     <script>
-        // Backup JavaScript redirect
-        window.location.href = 'ASN4/index.html';
+        function showTab(tabId) {
+            // hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // show selected tab
+            document.getElementById(tabId).classList.add('active');
+
+            // activate clicked button
+            event.target.classList.add('active');
+        }
     </script>
 </body>
 </html>

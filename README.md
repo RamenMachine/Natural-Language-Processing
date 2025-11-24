@@ -62,9 +62,9 @@ nlp_pipeline = {
 ### Key Achievements
 
 <table>
-<tr><td><b>Projects Completed</b></td><td align="right"><code>4</code></td></tr>
-<tr><td><b>Algorithms Implemented</b></td><td align="right"><code>12+</code></td></tr>
-<tr><td><b>Lines of Code</b></td><td align="right"><code>3,500+</code></td></tr>
+<tr><td><b>Projects Completed</b></td><td align="right"><code>5</code></td></tr>
+<tr><td><b>Algorithms Implemented</b></td><td align="right"><code>15+</code></td></tr>
+<tr><td><b>Lines of Code</b></td><td align="right"><code>4,200+</code></td></tr>
 <tr><td><b>Datasets Processed</b></td><td align="right"><code>15K+ samples</code></td></tr>
 <tr><td><b>Model Accuracy (Best)</b></td><td align="right"><code>95.2%</code></td></tr>
 <tr><td><b>Technologies Mastered</b></td><td align="right"><code>15+</code></td></tr>
@@ -78,11 +78,52 @@ nlp_pipeline = {
 
 ## 🎯 Portfolio Projects
 
+### Assignment 5: Constituency and Dependency Parsing
+
+<div align="center">
+
+**[🌐 Live Demo](https://ramenmachine.github.io/Natural-Language-Processing/)** | **[📂 Source Code](ASN5/assignment5.py)** | **[📂 Dep Parser](ASN5/dep_parser.py)**
+
+</div>
+
+```
+┌─ PARSING ALGORITHMS & SYNTACTIC ANALYSIS ────────────────────────────────┐
+│                                                                           │
+│  ▸ Constituency Tree Visualization                                       │
+│    • Built parse trees using production rules                            │
+│    • NLTK tree.draw() for graphical representation                       │
+│    • Demonstrated S → VP, VP → NP V PP derivations                       │
+│                                                                           │
+│  ▸ CKY Parsing Algorithm                                                 │
+│    • Full implementation from Jurafsky & Martin Section 13.4             │
+│    • Chomsky Normal Form conversion (5,517 → 13,500 rules)              │
+│    • Back-pointer tracking for parse tree reconstruction                 │
+│    • Handles ambiguous grammars with multiple parse outputs              │
+│                                                                           │
+│  ▸ Dependency Parsing with Stanford CoreNLP                              │
+│    • NLTK CoreNLP interface integration                                  │
+│    • CoNLL format output (word, POS, head, relation)                    │
+│    • Server-based parsing on port 9000                                   │
+│                                                                           │
+│  ▸ Ambiguous Sentence Analysis                                           │
+│    • "Flying planes can be dangerous" - gerund vs adjective             │
+│    • "Amid the chaos I saw her duck" - noun vs verb                     │
+│    • Parser limitation analysis                                          │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Technologies:** NLTK, Stanford CoreNLP, CKY Algorithm, CFG, Chomsky Normal Form
+
+<br>
+
+---
+
 ### Assignment 4: Named Entity Recognition with LSTM Networks
 
 <div align="center">
 
-**[🌐 Live Demo](https://ramenmachine.github.io/Natural-Language-Processing/ASN4/)** | **[📂 Source Code](ASN4/HW4.py)** | **[📓 Notebook](ASN4/assignment4_showcase.ipynb)**
+**[🌐 Project Page](https://ramenmachine.github.io/Natural-Language-Processing/ASN4/)** | **[📂 Source Code](ASN4/HW4.py)** | **[📓 Notebook](ASN4/assignment4_showcase.ipynb)**
 
 </div>
 
@@ -576,6 +617,14 @@ Natural-Language-Processing/
 │   ├── README.md                  # Project documentation
 │   └── requirements.txt           # Python dependencies
 │
+├── ASN5/                          # Constituency & Dependency Parsing
+│   ├── assignment5.py             # CKY algorithm, constituency trees
+│   ├── dep_parser.py              # Stanford CoreNLP dependency parser
+│   ├── start_corenlp.bat          # Server startup script (Windows)
+│   ├── README.md                  # Setup instructions
+│   └── stanford-corenlp-4.5.10/   # CoreNLP installation
+│
+├── index.html                     # Main portfolio page with tabs
 ├── README.md                      # This file
 ├── requirements.txt               # Global dependencies
 └── LICENSE                        # MIT License
