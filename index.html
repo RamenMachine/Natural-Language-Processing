@@ -9,6 +9,9 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -236,6 +239,12 @@
             border-radius: 20px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(255, 51, 102, 0.3);
         }
 
         .metric-card h4 {
@@ -292,7 +301,7 @@
             color: #e2e8f0;
             padding: 24px;
             border-radius: 12px;
-            font-family: 'Fira Code', monospace;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.9rem;
             margin: 16px 0;
             overflow-x: auto;
@@ -312,6 +321,232 @@
             color: #ff3366;
             display: block;
             margin-bottom: 8px;
+        }
+
+        /* Visualization Container */
+        .viz-container {
+            padding: 40px;
+            margin: 32px 0;
+        }
+
+        .viz-container h3 {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        /* Tree Visualization */
+        .tree-viz {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .tree-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .node-label {
+            background: linear-gradient(135deg, #ff3366, #9333ea);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin: 8px;
+            box-shadow: 0 4px 20px rgba(255, 51, 102, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .node-label:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255, 51, 102, 0.6);
+        }
+
+        .node-label.terminal {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .node-label.terminal:hover {
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+        }
+
+        .tree-children {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .tree-children::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tree-branch {
+            position: relative;
+        }
+
+        .tree-branch::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* CKY Table */
+        .cky-table-container {
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+
+        .cky-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 4px;
+        }
+
+        .cky-table th, .cky-table td {
+            padding: 16px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .cky-table th {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.3), rgba(147, 51, 234, 0.3));
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .cky-table td {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            min-width: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .cky-table td:hover {
+            background: rgba(255, 51, 102, 0.2);
+            border-color: rgba(255, 51, 102, 0.5);
+        }
+
+        .cky-table td.filled {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3));
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .cky-table td.highlight {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.4), rgba(147, 51, 234, 0.4));
+            border-color: rgba(255, 51, 102, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.4); }
+            50% { box-shadow: 0 0 20px 5px rgba(255, 51, 102, 0.2); }
+        }
+
+        /* Dependency Graph */
+        .dep-graph {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .dep-words {
+            display: flex;
+            gap: 40px;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .dep-word {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .dep-word-text {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dep-word-pos {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #ff3366;
+            font-weight: 600;
+        }
+
+        .dep-arcs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Ambiguity Visualization */
+        .ambiguity-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        .interpretation {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .interpretation h4 {
+            color: #ff3366;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .interpretation p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .interpretation.active {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 24px 0;
         }
 
         /* Buttons */
@@ -385,6 +620,8 @@
             .tab-nav { flex-direction: column; gap: 4px; }
             .tab-btn { width: 100%; }
             .container { padding: 0 20px; }
+            .ambiguity-box { grid-template-columns: 1fr; }
+            .dep-words { gap: 20px; flex-wrap: wrap; }
         }
 
         /* Scrollbar */
@@ -393,6 +630,26 @@
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #ff3366, #9333ea);
             border-radius: 5px;
+        }
+
+        /* Insight Box */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.15), rgba(147, 51, 234, 0.15));
+            border-radius: 16px;
+            padding: 28px;
+            margin: 24px 0;
+            border-left: 4px solid #ff3366;
+        }
+
+        .insight-box h4 {
+            color: #ff3366;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .insight-box p {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
         }
     </style>
 </head>
@@ -456,27 +713,256 @@
                 </div>
             </div>
 
-            <div class="cards-grid">
-                <div class="glass-card feature-card">
-                    <h3>Constituency Tree Visualization</h3>
-                    <p>Built constituency parse trees using production rules:</p>
-                    <div class="code-snippet">
-S -> VP
-VP -> NP V PP
-NP -> DET N | N
-PP -> P NP
-
-Example: "Cat sat on the mat"
+            <!-- Constituency Tree Visualization -->
+            <div class="viz-container glass-card">
+                <h3>Constituency Parse Tree: "Cat sat on the mat"</h3>
+                <div class="tree-viz">
+                    <div class="tree-node">
+                        <div class="node-label">S</div>
+                        <div class="tree-children">
+                            <div class="tree-branch">
+                                <div class="tree-node">
+                                    <div class="node-label">VP</div>
+                                    <div class="tree-children">
+                                        <div class="tree-branch">
+                                            <div class="tree-node">
+                                                <div class="node-label">NP</div>
+                                                <div class="tree-children">
+                                                    <div class="tree-branch">
+                                                        <div class="node-label">N</div>
+                                                        <div class="tree-children">
+                                                            <div class="tree-branch">
+                                                                <div class="node-label terminal">Cat</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node">
+                                                <div class="node-label">V</div>
+                                                <div class="tree-children">
+                                                    <div class="tree-branch">
+                                                        <div class="node-label terminal">sat</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node">
+                                                <div class="node-label">PP</div>
+                                                <div class="tree-children">
+                                                    <div class="tree-branch">
+                                                        <div class="tree-node">
+                                                            <div class="node-label">P</div>
+                                                            <div class="tree-children">
+                                                                <div class="tree-branch">
+                                                                    <div class="node-label terminal">on</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tree-branch">
+                                                        <div class="tree-node">
+                                                            <div class="node-label">NP</div>
+                                                            <div class="tree-children">
+                                                                <div class="tree-branch">
+                                                                    <div class="tree-node">
+                                                                        <div class="node-label">DET</div>
+                                                                        <div class="tree-children">
+                                                                            <div class="tree-branch">
+                                                                                <div class="node-label terminal">the</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tree-branch">
+                                                                    <div class="tree-node">
+                                                                        <div class="node-label">N</div>
+                                                                        <div class="tree-children">
+                                                                            <div class="tree-branch">
+                                                                                <div class="node-label terminal">mat</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <ul>
-                        <li><strong>Production Rules:</strong> 6 grammar rules</li>
-                        <li><strong>Visualization:</strong> NLTK tree.draw()</li>
-                        <li><strong>Output:</strong> Pretty-printed parse tree</li>
-                    </ul>
+                </div>
+                <div class="insight-box">
+                    <h4>Production Rules Applied</h4>
+                    <p>S → VP | VP → NP V PP | NP → N | PP → P NP | NP → DET N</p>
+                </div>
+            </div>
+
+            <!-- CKY Algorithm Visualization -->
+            <div class="viz-container glass-card">
+                <h3>CKY Parsing Table</h3>
+                <p style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 24px;">
+                    Dynamic programming table for parsing "What is this"
+                </p>
+                <div class="cky-table-container">
+                    <table class="cky-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>What (1)</th>
+                                <th>is (2)</th>
+                                <th>this (3)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>1</th>
+                                <td class="filled">WP, NP</td>
+                                <td class="filled">WHNP, S'</td>
+                                <td class="highlight">SIGMA, S</td>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <td></td>
+                                <td class="filled">VBZ, VP</td>
+                                <td class="filled">S, VP'</td>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <td></td>
+                                <td></td>
+                                <td class="filled">DT, NP</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="insight-box">
+                    <h4>How CKY Works</h4>
+                    <p>The CKY algorithm fills the table bottom-up. Diagonal cells contain POS tags for each word.
+                    Upper cells combine constituents using grammar rules. The top-right cell contains the start symbol (S) if the sentence is grammatical.</p>
+                </div>
+            </div>
+
+            <!-- Grammar Conversion Chart -->
+            <div class="viz-container glass-card">
+                <h3>Chomsky Normal Form Conversion</h3>
+                <div class="chart-container">
+                    <canvas id="cnfChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>Why CNF?</h4>
+                    <p>CKY requires all grammar rules to be in Chomsky Normal Form: either A → BC (two non-terminals) or A → a (one terminal).
+                    The ATIS grammar expands from 5,517 to ~13,500 rules after CNF conversion due to binarization of longer rules.</p>
+                </div>
+            </div>
+
+            <!-- Dependency Parsing Visualization -->
+            <div class="viz-container glass-card">
+                <h3>Dependency Parse: "The cat sat on the mat"</h3>
+                <svg width="100%" height="200" viewBox="0 0 700 200" style="max-width: 700px; margin: 0 auto; display: block;">
+                    <!-- Arcs -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#ff3366"/>
+                        </marker>
+                    </defs>
+
+                    <!-- det: The -> cat -->
+                    <path d="M 80 140 Q 80 100 140 100 Q 200 100 200 140" fill="none" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="140" y="85" fill="#9333ea" font-size="12" text-anchor="middle">det</text>
+
+                    <!-- nsubj: cat -> sat -->
+                    <path d="M 200 140 Q 200 60 320 60 Q 440 60 440 140" fill="none" stroke="#ff3366" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="320" y="45" fill="#ff3366" font-size="12" text-anchor="middle">nsubj</text>
+
+                    <!-- case: on -> mat -->
+                    <path d="M 520 140 Q 520 100 580 100 Q 640 100 640 140" fill="none" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="580" y="85" fill="#9333ea" font-size="12" text-anchor="middle">case</text>
+
+                    <!-- det: the -> mat -->
+                    <path d="M 560 140 Q 560 120 600 120 Q 640 120 640 140" fill="none" stroke="#9333ea" stroke-width="2"/>
+
+                    <!-- nmod: mat -> sat -->
+                    <path d="M 640 140 Q 640 40 440 40" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="540" y="30" fill="#10b981" font-size="12" text-anchor="middle">nmod</text>
+
+                    <!-- Words -->
+                    <text x="80" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">The</text>
+                    <text x="80" y="180" fill="#ff3366" font-size="12" text-anchor="middle">DT</text>
+
+                    <text x="200" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">cat</text>
+                    <text x="200" y="180" fill="#ff3366" font-size="12" text-anchor="middle">NN</text>
+
+                    <text x="320" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">sat</text>
+                    <text x="320" y="180" fill="#10b981" font-size="12" text-anchor="middle">ROOT</text>
+
+                    <text x="440" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">on</text>
+                    <text x="440" y="180" fill="#ff3366" font-size="12" text-anchor="middle">IN</text>
+
+                    <text x="560" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">the</text>
+                    <text x="560" y="180" fill="#ff3366" font-size="12" text-anchor="middle">DT</text>
+
+                    <text x="640" y="160" fill="white" font-size="16" text-anchor="middle" font-weight="600">mat</text>
+                    <text x="640" y="180" fill="#ff3366" font-size="12" text-anchor="middle">NN</text>
+                </svg>
+
+                <div class="code-snippet" style="margin-top: 24px;">
+Word        POS    Head   Relation
+─────────────────────────────────
+The         DT     2      det
+cat         NN     3      nsubj
+sat         VBD    0      ROOT
+on          IN     6      case
+the         DT     6      det
+mat         NN     3      nmod
+                </div>
+            </div>
+
+            <!-- Ambiguity Analysis -->
+            <div class="viz-container glass-card">
+                <h3>Structural Ambiguity Analysis</h3>
+                <p style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 24px;">
+                    "Flying planes can be dangerous"
+                </p>
+
+                <div class="ambiguity-box">
+                    <div class="interpretation">
+                        <h4>Interpretation 1: Gerund Phrase</h4>
+                        <p><strong>"Flying"</strong> is a verb (VBG) - the act of piloting planes</p>
+                        <p style="margin-top: 12px;"><em>"The act of flying planes can be dangerous"</em></p>
+                        <div class="code-snippet" style="font-size: 0.8rem;">
+[NP [VP Flying planes]] can be dangerous
+     ↑ "Flying" is the head
+                        </div>
+                    </div>
+                    <div class="interpretation active">
+                        <h4>Interpretation 2: Adjective</h4>
+                        <p><strong>"Flying"</strong> is an adjective (JJ) - modifying planes</p>
+                        <p style="margin-top: 12px;"><em>"Planes that are flying can be dangerous"</em></p>
+                        <div class="code-snippet" style="font-size: 0.8rem;">
+[NP [JJ Flying] planes] can be dangerous
+              ↑ "planes" is the head
+                        </div>
+                    </div>
                 </div>
 
+                <div class="insight-box">
+                    <h4>Parser Limitation</h4>
+                    <p>Dependency parsers trained on treebanks can only output ONE interpretation. They cannot represent ambiguity -
+                    they pick the most probable parse based on training data. This is why human disambiguation often remains necessary for NLP systems.</p>
+                </div>
+            </div>
+
+            <div class="cards-grid">
                 <div class="glass-card feature-card">
-                    <h3>CKY Parsing Algorithm</h3>
+                    <h3>CKY Algorithm Details</h3>
                     <p>Implemented the Cocke-Kasami-Younger algorithm:</p>
                     <ul>
                         <li><strong>Grammar:</strong> ATIS CFG (5,517 productions)</li>
@@ -485,41 +971,25 @@ Example: "Cat sat on the mat"
                         <li><strong>Multiple parses:</strong> Handles ambiguity</li>
                     </ul>
                     <div class="formula">
-                        <strong>Complexity</strong>
+                        <strong>Time Complexity</strong>
                         $$O(n^3 \cdot |G|)$$
                         <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">where n = sentence length, |G| = grammar size</p>
                     </div>
                 </div>
 
                 <div class="glass-card feature-card">
-                    <h3>Dependency Parsing</h3>
-                    <p>Stanford CoreNLP integration for dependency analysis:</p>
+                    <h3>Stanford CoreNLP Integration</h3>
+                    <p>Server-based dependency parsing:</p>
                     <ul>
-                        <li><strong>Server:</strong> CoreNLP on port 9000</li>
-                        <li><strong>Output:</strong> CoNLL format</li>
-                        <li><strong>Columns:</strong> word, POS, head, relation</li>
+                        <li><strong>Server:</strong> Java-based on port 9000</li>
+                        <li><strong>Interface:</strong> NLTK CoreNLPDependencyParser</li>
+                        <li><strong>Output:</strong> CoNLL 4-column format</li>
+                        <li><strong>Relations:</strong> Universal Dependencies</li>
                     </ul>
-                    <div class="code-snippet">
-Word        POS    Head   Relation
-The         DT     2      det
-cat         NN     3      nsubj
-sat         VBD    0      ROOT
-on          IN     6      case
-the         DT     6      det
-mat         NN     3      nmod
+                    <div class="formula">
+                        <strong>Dependency Triple</strong>
+                        $$(head, relation, dependent)$$
                     </div>
-                </div>
-
-                <div class="glass-card feature-card">
-                    <h3>Ambiguity Analysis</h3>
-                    <p>Analyzed structurally ambiguous sentences:</p>
-                    <ul>
-                        <li><strong>"Flying planes can be dangerous"</strong></li>
-                        <li>Gerund vs participial adjective</li>
-                        <li><strong>"Amid the chaos I saw her duck"</strong></li>
-                        <li>Noun (bird) vs verb (ducking)</li>
-                        <li><strong>Parser limitations:</strong> Single interpretation</li>
-                    </ul>
                 </div>
             </div>
 
@@ -652,6 +1122,65 @@ Input (100 tokens)
             // activate clicked button
             event.target.classList.add('active');
         }
+
+        // CNF Conversion Chart
+        const cnfCtx = document.getElementById('cnfChart').getContext('2d');
+        new Chart(cnfCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Original ATIS Grammar', 'After CNF Conversion'],
+                datasets: [{
+                    label: 'Number of Production Rules',
+                    data: [5517, 13500],
+                    backgroundColor: [
+                        'rgba(147, 51, 234, 0.7)',
+                        'rgba(255, 51, 102, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(147, 51, 234, 1)',
+                        'rgba(255, 51, 102, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            font: { size: 12 }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            font: { size: 13, weight: '600' }
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
