@@ -33,6 +33,14 @@
             --orange-primary: #f97316;
             --orange-secondary: #f59e0b;
             --orange-glow: #fb923c;
+            /* ASN6 - Purple/Violet */
+            --purple-primary: #8b5cf6;
+            --purple-secondary: #a855f7;
+            --purple-glow: #c084fc;
+            /* ASN7 - Red/Rose */
+            --red-primary: #ef4444;
+            --red-secondary: #f43f5e;
+            --red-glow: #fb7185;
         }
 
         body {
@@ -87,6 +95,14 @@
         .theme-orange .blob-1 { background: radial-gradient(circle, var(--orange-primary), transparent); }
         .theme-orange .blob-2 { background: radial-gradient(circle, var(--orange-glow), transparent); }
         .theme-orange .blob-3 { background: radial-gradient(circle, var(--orange-secondary), transparent); }
+
+        .theme-purple .blob-1 { background: radial-gradient(circle, var(--purple-primary), transparent); }
+        .theme-purple .blob-2 { background: radial-gradient(circle, var(--purple-glow), transparent); }
+        .theme-purple .blob-3 { background: radial-gradient(circle, var(--purple-secondary), transparent); }
+
+        .theme-red .blob-1 { background: radial-gradient(circle, var(--red-primary), transparent); }
+        .theme-red .blob-2 { background: radial-gradient(circle, var(--red-glow), transparent); }
+        .theme-red .blob-3 { background: radial-gradient(circle, var(--red-secondary), transparent); }
 
         @keyframes float {
             0%, 100% { transform: translate(0, 0) scale(1); }
@@ -145,6 +161,8 @@
         .tab-btn.active.green { background: linear-gradient(135deg, var(--green-primary), var(--green-secondary)); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
         .tab-btn.active.pink { background: linear-gradient(135deg, var(--pink-primary), var(--pink-secondary)); box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4); }
         .tab-btn.active.orange { background: linear-gradient(135deg, var(--orange-primary), var(--orange-secondary)); box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); }
+        .tab-btn.active.purple { background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary)); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
+        .tab-btn.active.red { background: linear-gradient(135deg, var(--red-primary), var(--red-secondary)); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
 
         .tab-btn .badge-new {
             position: absolute;
@@ -178,6 +196,8 @@
         .theme-green .section-header h2 { background: linear-gradient(135deg, #fff, var(--green-primary)); -webkit-background-clip: text; }
         .theme-pink .section-header h2 { background: linear-gradient(135deg, #fff, var(--pink-primary)); -webkit-background-clip: text; }
         .theme-orange .section-header h2 { background: linear-gradient(135deg, #fff, var(--orange-primary)); -webkit-background-clip: text; }
+        .theme-purple .section-header h2 { background: linear-gradient(135deg, #fff, var(--purple-primary)); -webkit-background-clip: text; }
+        .theme-red .section-header h2 { background: linear-gradient(135deg, #fff, var(--red-primary)); -webkit-background-clip: text; }
 
         /* Metrics Grid */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 28px 0; }
@@ -214,6 +234,14 @@
         .theme-orange .metric-card .value { background: linear-gradient(135deg, #fff, var(--orange-primary)); -webkit-background-clip: text; }
         .theme-orange .metric-card:hover { box-shadow: 0 10px 30px rgba(249,115,22,0.3); }
 
+        .theme-purple .metric-card { background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(168,85,247,0.2)); }
+        .theme-purple .metric-card .value { background: linear-gradient(135deg, #fff, var(--purple-primary)); -webkit-background-clip: text; }
+        .theme-purple .metric-card:hover { box-shadow: 0 10px 30px rgba(139,92,246,0.3); }
+
+        .theme-red .metric-card { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(244,63,94,0.2)); }
+        .theme-red .metric-card .value { background: linear-gradient(135deg, #fff, var(--red-primary)); -webkit-background-clip: text; }
+        .theme-red .metric-card:hover { box-shadow: 0 10px 30px rgba(239,68,68,0.3); }
+
         /* Glass Cards */
         .glass-card {
             background: rgba(255,255,255,0.06);
@@ -238,6 +266,8 @@
         .theme-green .feature-card li strong, .theme-green .feature-card h3 { color: var(--green-primary); }
         .theme-pink .feature-card li strong, .theme-pink .feature-card h3 { color: var(--pink-primary); }
         .theme-orange .feature-card li strong, .theme-orange .feature-card h3 { color: var(--orange-primary); }
+        .theme-purple .feature-card li strong, .theme-purple .feature-card h3 { color: var(--purple-primary); }
+        .theme-red .feature-card li strong, .theme-red .feature-card h3 { color: var(--red-primary); }
 
         .code-snippet {
             background: rgba(0,0,0,0.4);
@@ -264,6 +294,8 @@
         .theme-green .formula strong { color: var(--green-primary); }
         .theme-pink .formula strong { color: var(--pink-primary); }
         .theme-orange .formula strong { color: var(--orange-primary); }
+        .theme-purple .formula strong { color: var(--purple-primary); }
+        .theme-red .formula strong { color: var(--red-primary); }
 
         /* Buttons */
         .btn-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
@@ -288,6 +320,10 @@
         .theme-pink .btn-primary:hover { box-shadow: 0 10px 25px rgba(236,72,153,0.4); }
         .theme-orange .btn-primary { background: linear-gradient(135deg, var(--orange-primary), var(--orange-secondary)); }
         .theme-orange .btn-primary:hover { box-shadow: 0 10px 25px rgba(249,115,22,0.4); }
+        .theme-purple .btn-primary { background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary)); }
+        .theme-purple .btn-primary:hover { box-shadow: 0 10px 25px rgba(139,92,246,0.4); }
+        .theme-red .btn-primary { background: linear-gradient(135deg, var(--red-primary), var(--red-secondary)); }
+        .theme-red .btn-primary:hover { box-shadow: 0 10px 25px rgba(239,68,68,0.4); }
 
         .btn-secondary { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.15); }
         .btn-secondary:hover { background: rgba(255,255,255,0.15); }
@@ -331,6 +367,8 @@
             transition: all 0.3s ease;
         }
         .theme-orange .node-label { background: linear-gradient(135deg, var(--orange-primary), var(--orange-secondary)); box-shadow: 0 4px 15px rgba(249,115,22,0.4); }
+        .theme-purple .node-label { background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary)); box-shadow: 0 4px 15px rgba(139,92,246,0.4); }
+        .theme-red .node-label { background: linear-gradient(135deg, var(--red-primary), var(--red-secondary)); box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
         .node-label.terminal { background: linear-gradient(135deg, #10b981, #059669) !important; box-shadow: 0 4px 15px rgba(16,185,129,0.4) !important; }
         .node-label:hover { transform: scale(1.08); }
         .tree-children { display: flex; justify-content: center; gap: 16px; position: relative; }
@@ -351,12 +389,16 @@
         }
         .theme-orange .insight-box { background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(245,158,11,0.12)); border-color: var(--orange-primary); }
         .theme-orange .insight-box h4 { color: var(--orange-primary); }
+        .theme-purple .insight-box { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(168,85,247,0.12)); border-color: var(--purple-primary); }
+        .theme-purple .insight-box h4 { color: var(--purple-primary); }
+        .theme-red .insight-box { background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(244,63,94,0.12)); border-color: var(--red-primary); }
+        .theme-red .insight-box h4 { color: var(--red-primary); }
         .insight-box h4 { margin-bottom: 10px; font-size: 1rem; }
         .insight-box p { color: rgba(255,255,255,0.8); line-height: 1.7; }
     </style>
 </head>
 <body>
-    <div class="background-container theme-orange" id="bgContainer">
+    <div class="background-container theme-red" id="bgContainer">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="blob blob-3"></div>
@@ -375,8 +417,10 @@
             <button class="tab-btn blue" onclick="showTab('asn2', 'blue', this)">ML Classifiers</button>
             <button class="tab-btn green" onclick="showTab('asn3', 'green', this)">N-grams & POS</button>
             <button class="tab-btn pink" onclick="showTab('asn4', 'pink', this)">NER & LSTM</button>
-            <button class="tab-btn orange active" onclick="showTab('asn5', 'orange', this)">
-                Parsing
+            <button class="tab-btn orange" onclick="showTab('asn5', 'orange', this)">Parsing</button>
+            <button class="tab-btn purple" onclick="showTab('asn6', 'purple', this)">WSD & SRL</button>
+            <button class="tab-btn red active" onclick="showTab('asn7', 'red', this)">
+                Chatbot & Translation
                 <span class="badge-new">NEW</span>
             </button>
         </div>
@@ -550,7 +594,7 @@ Embedding(300D) -> LSTM(128)
         </div>
 
         <!-- ASN5: Parsing (Orange) -->
-        <div id="asn5" class="tab-content active theme-orange">
+        <div id="asn5" class="tab-content theme-orange">
             <div class="section-header">
                 <h2>Constituency & Dependency Parsing</h2>
                 <p>CKY algorithm and Stanford CoreNLP integration</p>
@@ -617,6 +661,128 @@ sat     VBD   0     ROOT
             <div class="btn-group">
                 <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN5/assignment5.py" class="btn btn-primary" target="_blank">View Source</a>
                 <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN5" class="btn btn-secondary" target="_blank">Project Folder</a>
+            </div>
+        </div>
+
+        <!-- ASN6: WSD & SRL (Purple) -->
+        <div id="asn6" class="tab-content theme-purple">
+            <div class="section-header">
+                <h2>Word Sense Disambiguation & Semantic Role Labeling</h2>
+                <p>Lesk algorithm, BiLSTM networks, and neural SRL models</p>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card"><h4>WSD F-Score</h4><div class="value">0.59</div><p style="opacity:0.7;font-size:0.85rem;">BiLSTM</p></div>
+                <div class="metric-card"><h4>SRL F-Score</h4><div class="value">0.83</div><p style="opacity:0.7;font-size:0.85rem;">LSTM Model</p></div>
+                <div class="metric-card"><h4>Models</h4><div class="value">3</div><p style="opacity:0.7;font-size:0.85rem;">WSD Approaches</p></div>
+                <div class="metric-card"><h4>Dataset</h4><div class="value">SemCor</div><p style="opacity:0.7;font-size:0.85rem;">+ OntoNotes</p></div>
+            </div>
+            <div class="cards-grid">
+                <div class="glass-card feature-card">
+                    <h3>Word Sense Disambiguation</h3>
+                    <div class="formula">
+                        <strong>Simplified Lesk Algorithm</strong>
+                        $$\text{Overlap}(C, D) = |C \cap D|$$
+                    </div>
+                    <ul>
+                        <li><strong>MFS Baseline:</strong> F-Score 0.54</li>
+                        <li><strong>Lesk Algorithm:</strong> F-Score 0.48</li>
+                        <li><strong>BiLSTM:</strong> F-Score 0.59 (best)</li>
+                        <li><strong>Corpus:</strong> SemCor (50 test sentences)</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>BiLSTM Architecture</h3>
+                    <div class="code-snippet">
+Embedding(100D) -> BiLSTM(128)
+-> BiLSTM(128) -> Dense
+-> Softmax(senses)
+                    </div>
+                    <ul>
+                        <li><strong>Learning Rate:</strong> 0.001</li>
+                        <li><strong>Optimizer:</strong> Adam</li>
+                        <li><strong>Epochs:</strong> 10</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>Semantic Role Labeling</h3>
+                    <div class="code-snippet">
+Word Embed(100D) + Predicate(10D)
+-> LSTM(128) -> LSTM(64)
+-> TimeDistributed Dense
+-> Softmax(SRL labels)
+                    </div>
+                    <ul>
+                        <li><strong>Dataset:</strong> OntoNotes v5</li>
+                        <li><strong>Precision:</strong> 0.85</li>
+                        <li><strong>Recall:</strong> 0.82</li>
+                        <li><strong>F-Score:</strong> 0.83</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-group">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN6/assignment6.py" class="btn btn-primary" target="_blank">View Source</a>
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN6" class="btn btn-secondary" target="_blank">Project Folder</a>
+            </div>
+        </div>
+
+        <!-- ASN7: Chatbot & Translation (Red) -->
+        <div id="asn7" class="tab-content active theme-red">
+            <div class="section-header">
+                <h2>NLP Toolkit: Chatbot, Slot Filling & Translation</h2>
+                <p>Corpus-based chatbot, LSTM slot filling, and German-English neural translation</p>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card"><h4>Chatbot</h4><div class="value">TF-IDF</div><p style="opacity:0.7;font-size:0.85rem;">Cosine Sim</p></div>
+                <div class="metric-card"><h4>Slot F1</h4><div class="value">0.95</div><p style="opacity:0.7;font-size:0.85rem;">BiLSTM</p></div>
+                <div class="metric-card"><h4>BLEU</h4><div class="value">0.18</div><p style="opacity:0.7;font-size:0.85rem;">Translation</p></div>
+                <div class="metric-card"><h4>Systems</h4><div class="value">3</div><p style="opacity:0.7;font-size:0.85rem;">Complete</p></div>
+            </div>
+            <div class="cards-grid">
+                <div class="glass-card feature-card">
+                    <h3>Corpus-Based Chatbot</h3>
+                    <div class="formula">
+                        <strong>TF-IDF Similarity</strong>
+                        $$\text{sim}(\vec{d_1}, \vec{d_2}) = \frac{\vec{d_1} \cdot \vec{d_2}}{|\vec{d_1}| |\vec{d_2}|}$$
+                    </div>
+                    <ul>
+                        <li><strong>Corpus:</strong> NPS Chat (~10K messages)</li>
+                        <li><strong>Retrieval:</strong> TF-IDF + Cosine similarity</li>
+                        <li><strong>Filtering:</strong> Removes questions, short responses</li>
+                        <li><strong>Evaluation:</strong> Engagingness 3/5, Fluency 4.5/5</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>LSTM Slot Filling</h3>
+                    <div class="code-snippet">
+Embedding(100D) -> BiLSTM(128)
+-> BiLSTM(64) -> Dense(128)
+-> TimeDistributed -> Softmax
+                    </div>
+                    <ul>
+                        <li><strong>Dataset:</strong> ATIS (~4.4K train, 900 test)</li>
+                        <li><strong>Slots:</strong> 127 unique labels</li>
+                        <li><strong>Precision:</strong> 0.95</li>
+                        <li><strong>F1-Score:</strong> 0.95</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>Neural Machine Translation</h3>
+                    <div class="code-snippet">
+Encoder: Embedding -> LSTM
+Decoder: LSTM -> Attention
+-> Dense -> Softmax
+                    </div>
+                    <ul>
+                        <li><strong>Dataset:</strong> WMT14 (de-en)</li>
+                        <li><strong>Architecture:</strong> Seq2Seq + Attention</li>
+                        <li><strong>Vocab:</strong> 10K German, 10K English</li>
+                        <li><strong>BLEU Score:</strong> 0.18</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-group">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN7" class="btn btn-primary" target="_blank">View Source</a>
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN7/README.md" class="btn btn-secondary" target="_blank">Documentation</a>
             </div>
         </div>
     </div>

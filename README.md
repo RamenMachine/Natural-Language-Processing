@@ -62,9 +62,9 @@ nlp_pipeline = {
 ### Key Achievements
 
 <table>
-<tr><td><b>Projects Completed</b></td><td align="right"><code>5</code></td></tr>
-<tr><td><b>Algorithms Implemented</b></td><td align="right"><code>15+</code></td></tr>
-<tr><td><b>Lines of Code</b></td><td align="right"><code>4,200+</code></td></tr>
+<tr><td><b>Projects Completed</b></td><td align="right"><code>7</code></td></tr>
+<tr><td><b>Algorithms Implemented</b></td><td align="right"><code>20+</code></td></tr>
+<tr><td><b>Lines of Code</b></td><td align="right"><code>6,500+</code></td></tr>
 <tr><td><b>Datasets Processed</b></td><td align="right"><code>15K+ samples</code></td></tr>
 <tr><td><b>Model Accuracy (Best)</b></td><td align="right"><code>95.2%</code></td></tr>
 <tr><td><b>Technologies Mastered</b></td><td align="right"><code>15+</code></td></tr>
@@ -77,6 +77,82 @@ nlp_pipeline = {
 <br>
 
 ## 🎯 Portfolio Projects
+
+### Assignment 7: NLP Toolkit - Chatbot, Slot Filling & Neural Translation
+
+<div align="center">
+
+**[🌐 Live Demo](https://ramenmachine.github.io/Natural-Language-Processing/)** | **[📂 Source Code](ASN7/)** | **[📖 Documentation](ASN7/README.md)**
+
+</div>
+
+```
+┌─ THREE COMPLETE NLP SYSTEMS ─────────────────────────────────────────────┐
+│                                                                           │
+│  ▸ Corpus-Based Chatbot (TF-IDF Retrieval)                              │
+│    • Custom TF-IDF implementation from scratch                           │
+│    • NPS Chat corpus (~10K messages)                                     │
+│    • Cosine similarity-based response matching                           │
+│    • Intelligent filtering (removes questions, short responses)          │
+│    • Evaluation: Engagingness 3/5, Making Sense 3/4, Fluency 4.5/5     │
+│                                                                           │
+│  ▸ LSTM Slot Filling (ATIS Dataset)                                     │
+│    • Bidirectional LSTM architecture: Embedding → BiLSTM(128) → Dense   │
+│    • ATIS travel dataset: 4.4K train, 900 test sentences               │
+│    • 127 unique slot labels (locations, dates, airlines, etc.)          │
+│    • Performance: Precision 0.95, Recall 0.94, F1-Score 0.95            │
+│    • TimeDistributed output layer for sequence labeling                  │
+│                                                                           │
+│  ▸ Neural Machine Translation (German → English)                         │
+│    • Seq2Seq architecture with attention mechanism                       │
+│    • WMT14 dataset (de-en configuration)                                 │
+│    • Encoder: Embedding → LSTM with context vectors                      │
+│    • Decoder: LSTM → Attention → Dense → Softmax                         │
+│    • BLEU Score: 0.18 (greedy decoding)                                 │
+│    • 10K vocab for both German and English                              │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Technologies:** TensorFlow, Keras, NLTK, Hugging Face Datasets, NumPy, Pandas
+
+<br>
+
+---
+
+### Assignment 6: Word Sense Disambiguation & Semantic Role Labeling
+
+<div align="center">
+
+**[🌐 Live Demo](https://ramenmachine.github.io/Natural-Language-Processing/)** | **[📂 Source Code](ASN6/assignment6.py)**
+
+</div>
+
+```
+┌─ SEMANTIC UNDERSTANDING & ROLE LABELING ─────────────────────────────────┐
+│                                                                           │
+│  ▸ Word Sense Disambiguation                                             │
+│    • Simplified Lesk Algorithm: Overlap(C, D) = |C ∩ D|                 │
+│    • Most Frequent Sense baseline: F-Score 0.54                          │
+│    • Lesk with gloss overlap: F-Score 0.48                              │
+│    • BiLSTM neural approach: F-Score 0.59 (best performance)            │
+│    • SemCor corpus evaluation (50 test sentences)                        │
+│                                                                           │
+│  ▸ Semantic Role Labeling                                                │
+│    • LSTM architecture: Word(100D) + Predicate(10D) → LSTM(128)         │
+│    • OntoNotes v5 dataset for SRL                                        │
+│    • Identifies predicate-argument structures                            │
+│    • Performance: Precision 0.85, Recall 0.82, F1-Score 0.83            │
+│    • Handles complex argument types (A0, A1, AM-TMP, etc.)              │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Technologies:** NLTK, WordNet, TensorFlow/Keras, BiLSTM, OntoNotes
+
+<br>
+
+---
 
 ### Assignment 5: Constituency and Dependency Parsing
 
@@ -623,6 +699,21 @@ Natural-Language-Processing/
 │   ├── start_corenlp.bat          # Server startup script (Windows)
 │   ├── README.md                  # Setup instructions
 │   └── stanford-corenlp-4.5.10/   # CoreNLP installation
+│
+├── ASN6/                          # Word Sense Disambiguation & SRL
+│   ├── assignment6.py             # Lesk algorithm, BiLSTM WSD, SRL model
+│   └── README.md                  # Project documentation
+│
+├── ASN7/                          # NLP Toolkit (Chatbot, Slot Filling, Translation)
+│   ├── assignment7.py             # Q1: Corpus-based chatbot (TF-IDF)
+│   ├── q2_slot_filling.py         # Q2: BiLSTM slot filling for ATIS
+│   ├── q3_translation.py          # Q3: Neural MT (German→English)
+│   ├── test_chatbot.py            # Automated chatbot testing
+│   ├── atis.train(1).csv          # ATIS training data
+│   ├── atis.val(1).csv            # ATIS validation data
+│   ├── atis.test(1).csv           # ATIS test data
+│   ├── README.md                  # Complete documentation
+│   └── requirements.txt           # Dependencies for ASN7
 │
 ├── index.html                     # Main portfolio page with tabs
 ├── README.md                      # This file
