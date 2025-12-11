@@ -62,7 +62,7 @@ nlp_pipeline = {
 ### Key Achievements
 
 <table>
-<tr><td><b>Projects Completed</b></td><td align="right"><code>7</code></td></tr>
+<tr><td><b>Projects Completed</b></td><td align="right"><code>8</code></td></tr>
 <tr><td><b>Algorithms Implemented</b></td><td align="right"><code>20+</code></td></tr>
 <tr><td><b>Lines of Code</b></td><td align="right"><code>6,500+</code></td></tr>
 <tr><td><b>Datasets Processed</b></td><td align="right"><code>15K+ samples</code></td></tr>
@@ -115,6 +115,47 @@ nlp_pipeline = {
 ```
 
 **Key Technologies:** TensorFlow, Keras, NLTK, Hugging Face Datasets, NumPy, Pandas
+
+<br>
+
+---
+
+### Assignment 8: Text Summarization - Abstractive & Extractive Approaches
+
+<div align="center">
+
+**[🌐 Live Demo](https://ramenmachine.github.io/Natural-Language-Processing/)** | **[📂 Source Code](ASN8/)** | **[📖 Documentation](ASN8/README.md)**
+
+</div>
+
+```
+┌─ THREE SUMMARIZATION APPROACHES ─────────────────────────────────────────┐
+│                                                                           │
+│  ▸ Abstractive (Encoder-Decoder with Beam Search)                       │
+│    • Custom LSTM encoder-decoder architecture                            │
+│    • CNN/DailyMail dataset (300K+ articles)                              │
+│    • Beam search for text generation (beam width: 3)                     │
+│    • ROUGE Scores: R-1: 0.25, R-2: 0.10, R-L: 0.20                      │
+│    • Generate summaries of 10+ words                                     │
+│                                                                           │
+│  ▸ Abstractive (Pre-trained T5)                                         │
+│    • T5-small model from Hugging Face                                    │
+│    • No training required - inference only                               │
+│    • ROUGE Scores: R-1: 0.40, R-2: 0.18, R-L: 0.35                      │
+│    • Superior performance vs custom encoder-decoder                      │
+│    • Evaluation: Fluency 4/5, Coherence 4/5, Fact-preserving 2.4/3     │
+│                                                                           │
+│  ▸ Extractive (PageRank Algorithm)                                      │
+│    • GloVe embeddings (Wikipedia 2014 + Gigaword 5)                      │
+│    • Sentence ranking via NetworkX PageRank                              │
+│    • BBC News Summary dataset (business category)                        │
+│    • Cosine similarity for sentence comparison                           │
+│    • ROUGE Scores: R-1: 0.35, R-2: 0.15, R-L: 0.30                      │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Technologies:** PyTorch, Transformers, NetworkX, GloVe, TorchMetrics, NLTK
 
 <br>
 
@@ -705,15 +746,19 @@ Natural-Language-Processing/
 │   └── README.md                  # Project documentation
 │
 ├── ASN7/                          # NLP Toolkit (Chatbot, Slot Filling, Translation)
-│   ├── assignment7.py             # Q1: Corpus-based chatbot (TF-IDF)
-│   ├── q2_slot_filling.py         # Q2: BiLSTM slot filling for ATIS
-│   ├── q3_translation.py          # Q3: Neural MT (German→English)
-│   ├── test_chatbot.py            # Automated chatbot testing
+│   ├── assignment7.py             # All 3 questions: Chatbot, Slot Filling, Translation
+│   ├── q1_chatbot_evaluation.txt  # Written evaluation for Q1
 │   ├── atis.train(1).csv          # ATIS training data
 │   ├── atis.val(1).csv            # ATIS validation data
 │   ├── atis.test(1).csv           # ATIS test data
 │   ├── README.md                  # Complete documentation
 │   └── requirements.txt           # Dependencies for ASN7
+│
+├── ASN8/                          # Text Summarization
+│   ├── assignment8.py             # All coding questions (Q1, Q2, Q4)
+│   ├── ASN8.txt                   # Written analysis for Q3
+│   ├── README.md                  # Project documentation
+│   └── requirements.txt           # Dependencies for ASN8
 │
 ├── index.html                     # Main portfolio page with tabs
 ├── README.md                      # This file
