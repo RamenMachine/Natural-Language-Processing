@@ -87,3 +87,6 @@ nltk_data/
 # *.csv
 # *.json
 # *.txt
+
+# Stanford CoreNLP (large JAR files)
+ASN5/stanford-corenlp-4.5.10/

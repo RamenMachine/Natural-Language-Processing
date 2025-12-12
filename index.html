@@ -41,6 +41,10 @@
             --red-primary: #ef4444;
             --red-secondary: #f43f5e;
             --red-glow: #fb7185;
+            /* ASN8 - Yellow/Lime */
+            --yellow-primary: #eab308;
+            --yellow-secondary: #84cc16;
+            --yellow-glow: #fde047;
         }
 
         body {
@@ -104,6 +108,10 @@
         .theme-red .blob-2 { background: radial-gradient(circle, var(--red-glow), transparent); }
         .theme-red .blob-3 { background: radial-gradient(circle, var(--red-secondary), transparent); }
 
+        .theme-yellow .blob-1 { background: radial-gradient(circle, var(--yellow-primary), transparent); }
+        .theme-yellow .blob-2 { background: radial-gradient(circle, var(--yellow-glow), transparent); }
+        .theme-yellow .blob-3 { background: radial-gradient(circle, var(--yellow-secondary), transparent); }
+
         @keyframes float {
             0%, 100% { transform: translate(0, 0) scale(1); }
             25% { transform: translate(50px, 50px) scale(1.1); }
@@ -163,6 +171,7 @@
         .tab-btn.active.orange { background: linear-gradient(135deg, var(--orange-primary), var(--orange-secondary)); box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); }
         .tab-btn.active.purple { background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary)); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
         .tab-btn.active.red { background: linear-gradient(135deg, var(--red-primary), var(--red-secondary)); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+        .tab-btn.active.yellow { background: linear-gradient(135deg, var(--yellow-primary), var(--yellow-secondary)); box-shadow: 0 6px 20px rgba(234, 179, 8, 0.4); }
 
         .tab-btn .badge-new {
             position: absolute;
@@ -241,6 +250,10 @@
         .theme-red .metric-card { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(244,63,94,0.2)); }
         .theme-red .metric-card .value { background: linear-gradient(135deg, #fff, var(--red-primary)); -webkit-background-clip: text; }
         .theme-red .metric-card:hover { box-shadow: 0 10px 30px rgba(239,68,68,0.3); }
+
+        .theme-yellow .metric-card { background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(132,204,22,0.2)); }
+        .theme-yellow .metric-card .value { background: linear-gradient(135deg, #fff, var(--yellow-primary)); -webkit-background-clip: text; }
+        .theme-yellow .metric-card:hover { box-shadow: 0 10px 30px rgba(234,179,8,0.3); }
 
         /* Glass Cards */
         .glass-card {
@@ -398,7 +411,7 @@
     </style>
 </head>
 <body>
-    <div class="background-container theme-red" id="bgContainer">
+    <div class="background-container theme-yellow" id="bgContainer">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="blob blob-3"></div>
@@ -419,8 +432,9 @@
             <button class="tab-btn pink" onclick="showTab('asn4', 'pink', this)">NER & LSTM</button>
             <button class="tab-btn orange" onclick="showTab('asn5', 'orange', this)">Parsing</button>
             <button class="tab-btn purple" onclick="showTab('asn6', 'purple', this)">WSD & SRL</button>
-            <button class="tab-btn red active" onclick="showTab('asn7', 'red', this)">
-                Chatbot & Translation
+            <button class="tab-btn red" onclick="showTab('asn7', 'red', this)">Chatbot & Translation</button>
+            <button class="tab-btn yellow active" onclick="showTab('asn8', 'yellow', this)">
+                Text Summarization
                 <span class="badge-new">NEW</span>
             </button>
         </div>
@@ -726,7 +740,7 @@ Word Embed(100D) + Predicate(10D)
         </div>
 
         <!-- ASN7: Chatbot & Translation (Red) -->
-        <div id="asn7" class="tab-content active theme-red">
+        <div id="asn7" class="tab-content theme-red">
             <div class="section-header">
                 <h2>NLP Toolkit: Chatbot, Slot Filling & Translation</h2>
                 <p>Corpus-based chatbot, LSTM slot filling, and German-English neural translation</p>
@@ -783,6 +797,67 @@ Decoder: LSTM -> Attention
             <div class="btn-group">
                 <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN7" class="btn btn-primary" target="_blank">View Source</a>
                 <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN7/README.md" class="btn btn-secondary" target="_blank">Documentation</a>
+            </div>
+        </div>
+
+        <!-- ASN8: Text Summarization (Yellow) -->
+        <div id="asn8" class="tab-content active theme-yellow">
+            <div class="section-header">
+                <h2>Text Summarization: Abstractive & Extractive</h2>
+                <p>Encoder-decoder models, T5 transformers, and PageRank-based extractive summarization</p>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card"><h4>T5 ROUGE-1</h4><div class="value">0.40</div><p style="opacity:0.7;font-size:0.85rem;">Pre-trained</p></div>
+                <div class="metric-card"><h4>PageRank</h4><div class="value">0.35</div><p style="opacity:0.7;font-size:0.85rem;">Extractive</p></div>
+                <div class="metric-card"><h4>Dataset</h4><div class="value">300K</div><p style="opacity:0.7;font-size:0.85rem;">Articles</p></div>
+                <div class="metric-card"><h4>Methods</h4><div class="value">3</div><p style="opacity:0.7;font-size:0.85rem;">Approaches</p></div>
+            </div>
+            <div class="cards-grid">
+                <div class="glass-card feature-card">
+                    <h3>Abstractive: Encoder-Decoder</h3>
+                    <div class="code-snippet">
+Encoder: Embedding -> LSTM
+Decoder: LSTM -> Beam Search
+-> Dense -> Softmax
+                    </div>
+                    <ul>
+                        <li><strong>Dataset:</strong> CNN/DailyMail (~300K articles)</li>
+                        <li><strong>Architecture:</strong> Custom LSTM seq2seq</li>
+                        <li><strong>Generation:</strong> Beam search (width=3)</li>
+                        <li><strong>ROUGE-1:</strong> ~0.25</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>Abstractive: T5 Transformer</h3>
+                    <div class="code-snippet">
+T5-small (60M params)
+Pre-trained on C4 corpus
+Zero-shot summarization
+                    </div>
+                    <ul>
+                        <li><strong>Model:</strong> T5-small (Hugging Face)</li>
+                        <li><strong>Training:</strong> Pre-trained, no fine-tuning</li>
+                        <li><strong>ROUGE-1:</strong> 0.40</li>
+                        <li><strong>Performance:</strong> State-of-the-art fluency</li>
+                    </ul>
+                </div>
+                <div class="glass-card feature-card">
+                    <h3>Extractive: PageRank</h3>
+                    <div class="formula">
+                        <strong>Sentence Similarity</strong>
+                        $$\text{sim}(S_i, S_j) = \frac{\vec{S_i} \cdot \vec{S_j}}{|\vec{S_i}| |\vec{S_j}|}$$
+                    </div>
+                    <ul>
+                        <li><strong>Embeddings:</strong> GloVe (Wikipedia + Gigaword)</li>
+                        <li><strong>Similarity:</strong> Cosine similarity matrix</li>
+                        <li><strong>Ranking:</strong> PageRank algorithm (NetworkX)</li>
+                        <li><strong>ROUGE-1:</strong> ~0.35</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-group">
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/tree/main/ASN8" class="btn btn-primary" target="_blank">View Source</a>
+                <a href="https://github.com/RamenMachine/Natural-Language-Processing/blob/main/ASN8/README.md" class="btn btn-secondary" target="_blank">Documentation</a>
             </div>
         </div>
     </div>
